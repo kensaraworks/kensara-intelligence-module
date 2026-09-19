@@ -1,0 +1,31 @@
+# ── Pipeline dependencies (GitHub Actions runners) ────────────────────────
+# Kept intentionally lean: everything here is pure-python or has manylinux
+# wheels, so `pip install` on ubuntu-latest is fast and never compiles.
+
+# HTTP + async
+httpx==0.27.2
+curl_cffi==0.7.4          # Chrome TLS-fingerprint impersonation (anti-bot)
+
+# Parsing
+beautifulsoup4==4.12.3
+lxml==5.3.0
+feedparser==6.0.11        # robust RSS/Atom parsing
+
+# Data models / validation
+pydantic==2.9.2
+
+# LLM providers (only the free/cheap ones are imported at runtime;
+# heavier SDKs are optional and lazily imported)
+groq==0.11.0
+google-generativeai==0.8.3
+openai==1.54.4            # fallback only
+
+# Logging
+structlog==24.4.0
+
+# Retry / resilience
+tenacity==9.0.0
+
+# Supabase access is done over plain REST via httpx (no heavy SDK needed).
+# python-dotenv for local dev only.
+python-dotenv==1.0.1

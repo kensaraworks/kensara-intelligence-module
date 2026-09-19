@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Secrets — never commit
+.env
+.env.local
+*.secret
+
+# Local run artifacts
+scratch/
+*.log
+.DS_Store
+
+# Node (front-end tooling, if any)
+node_modules/
+
+# OS
+Thumbs.db

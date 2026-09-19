@@ -1,0 +1,19 @@
+[
+  {"title": "RBI imposes Rs 5 crore penalty on payments firm for data localisation breach", "snippet": "The Reserve Bank of India ordered the fintech to pay Rs 5 crore for storing customer payment data on overseas servers in violation of the 2018 directive.", "label": true},
+  {"title": "CERT-In directs company to explain 6-hour breach reporting failure", "snippet": "CERT-In has issued a notice to the healthtech firm after it failed to report a data exposure within the mandated six-hour window.", "label": true},
+  {"title": "CCI fines Meta Rs 213 crore over WhatsApp privacy policy", "snippet": "The Competition Commission of India imposed a penalty and barred data-sharing for advertising for five years.", "label": true},
+  {"title": "High Court awards Rs 15 lakh compensation against data broker under IT Act 43A", "snippet": "The court found the broker negligent in maintaining reasonable security practices and ordered compensation to affected users.", "label": true},
+  {"title": "Irish DPC fines LinkedIn 310 million euro over targeted advertising", "snippet": "The regulator found unlawful processing of member data for behavioural advertising under GDPR.", "label": true},
+  {"title": "SEBI passes adjudication order against intermediary for data lapses", "snippet": "SEBI's adjudicating officer imposed a monetary penalty on the registered intermediary.", "label": true},
+  {"title": "MeitY notifies DPDP Rules bringing consent framework into force", "snippet": "The Ministry notified the rules, operationalising breach-notification and consent-manager requirements.", "label": true},
+  {"title": "Star Health faces investigation after policyholder data leak", "snippet": "IRDAI and CERT-In are examining the reported exposure of sensitive health records of customers.", "label": true},
+
+  {"title": "What the DPDPA means for Indian SaaS startups: a beginner's guide", "snippet": "This explainer walks through the key obligations under the new law for early-stage companies.", "label": false},
+  {"title": "Opinion: India needs sharper breach-notification timelines", "snippet": "The author argues that the current framework should be tightened to match global norms.", "label": false},
+  {"title": "Zomato launches new grocery delivery service in Bangalore", "snippet": "The food-delivery company expanded into quick commerce with a new service in the city.", "label": false},
+  {"title": "5 best practices for GDPR-compliant consent banners", "snippet": "A how-to listicle on designing cookie consent interfaces that convert.", "label": false},
+  {"title": "Webinar: preparing your startup for DPDPA compliance", "snippet": "Join our panel of experts to learn how to get ready for India's data protection law.", "label": false},
+  {"title": "Kensara raises funding to expand its compliance platform", "snippet": "The startup announced a new round to grow its DPDPA automation product across India.", "label": false},
+  {"title": "Data protection market in India projected to grow 20% annually", "snippet": "A market research report forecasts strong growth in privacy tech spending.", "label": false},
+  {"title": "Interview: a CISO on building a privacy-first culture", "snippet": "A conversation about embedding data protection into engineering teams.", "label": false}
+]

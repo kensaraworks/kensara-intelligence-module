@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "last_updated": "2026-09-19",
+    "last_updated_formatted": "19 September 2026",
+    "generated_at": "2026-09-19T09:00:30.587647+00:00"
+  },
+  "statistics": {
+    "total_all_sections": 10,
+    "total_dpdpa_board": 2,
+    "total_sectoral_regulators": 3,
+    "total_cert_in_breach": 2,
+    "total_courts_case_law": 1,
+    "total_international": 2
+  },
+  "sector_counts": {
+    "social_tech_count": 3,
+    "healthcare_count": 1,
+    "fintech_count": 2,
+    "gov_count": 4,
+    "other_sectors_count": 0
+  },
+  "sections": {
+    "dpdpa_board": [
+      {
+        "id": "IND-DPDPA-001",
+        "date": "2023-08-11",
+        "authority": "MeitY",
+        "company": "Statute — All Data Fiduciaries",
+        "sector": "Government",
+        "violation_type": "Legislation enacted",
+        "dpdpa_section": "DPDP Act 2023",
+        "summary": "The Digital Personal Data Protection Act, 2023 received Presidential assent, establishing India's first comprehensive data-protection statute with penalties up to ₹250 crore per breach.",
+        "penalty_amount": "Up to ₹250 Cr (framework)",
+        "outcome": "Enacted",
+        "source_url": "https://www.meity.gov.in/data-protection-framework"
+      },
+      {
+        "id": "IND-DPDPA-002",
+        "date": "2025-01-03",
+        "authority": "MeitY",
+        "company": "Draft DPDP Rules",
+        "sector": "Government",
+        "violation_type": "Subordinate legislation",
+        "dpdpa_section": "DPDP Rules (Draft)",
+        "summary": "MeitY published the draft Digital Personal Data Protection Rules for public consultation, detailing consent, breach-notification and Board-operation mechanics.",
+        "penalty_amount": "N/A (Rules)",
+        "outcome": "Consultation",
+        "source_url": "https://www.meity.gov.in/"
+      }
+    ],
+    "sectoral_regulators": [
+      {
+        "id": "IND-CCI-001",
+        "date": "2024-11-18",
+        "authority": "Competition Commission of India",
+        "company": "WhatsApp / Meta",
+        "sector": "Social Media / Tech",
+        "violation_type": "Data-sharing / abuse of dominance",
+        "dpdpa_section": "Competition Act §4",
+        "summary": "The CCI imposed a ₹213.14 crore penalty on Meta over WhatsApp's 2021 privacy policy and ordered a 5-year bar on sharing user data with other Meta companies for advertising.",
+        "penalty_amount": "₹213.14 Cr",
+        "outcome": "Fine Imposed",
+        "source_url": "https://www.cci.gov.in/"
+      },
+      {
+        "id": "IND-RBI-001",
+        "date": "2021-07-14",
+        "authority": "Reserve Bank of India",
+        "company": "Mastercard",
+        "sector": "Fintech",
+        "violation_type": "Data localisation non-compliance",
+        "dpdpa_section": "RBI Storage of Payment System Data (2018)",
+        "summary": "The RBI barred Mastercard from onboarding new domestic customers for failing to comply with the 2018 payment-data localisation directive. The ban was lifted in June 2022 after compliance.",
+        "penalty_amount": "Business restriction",
+        "outcome": "Business Ban / Restriction",
+        "source_url": "https://www.rbi.org.in/"
+      },
+      {
+        "id": "IND-RBI-002",
+        "date": "2021-04-23",
+        "authority": "Reserve Bank of India",
+        "company": "American Express & Diners Club",
+        "sector": "Fintech",
+        "violation_type": "Data localisation non-compliance",
+        "dpdpa_section": "RBI Storage of Payment System Data (2018)",
+        "summary": "The RBI stopped American Express and Diners Club from onboarding new customers over payment-data localisation non-compliance; the restriction on Amex was lifted in August 2022.",
+        "penalty_amount": "Business restriction",
+        "outcome": "Business Ban / Restriction",
+        "source_url": "https://www.rbi.org.in/"
+      }
+    ],
+    "cert_in_breach": [
+      {
+        "id": "IND-CERT-001",
+        "date": "2022-04-28",
+        "authority": "CERT-In",
+        "company": "All body corporates & intermediaries",
+        "sector": "Government",
+        "violation_type": "6-hour breach reporting mandate",
+        "dpdpa_section": "IT Act §70B(6) — CERT-In 2022 Directions",
+        "summary": "CERT-In issued directions requiring cyber-incident reporting within 6 hours and 180-day log retention, effective 28 June 2022 — India's first strictly enforced breach-notification regime.",
+        "penalty_amount": "Penalty / imprisonment (framework)",
+        "outcome": "Enacted",
+        "source_url": "https://www.cert-in.org.in/"
+      },
+      {
+        "id": "IND-CERT-002",
+        "date": "2024-09-20",
+        "authority": "CERT-In / IRDAI",
+        "company": "Star Health & Allied Insurance",
+        "sector": "Healthcare",
+        "violation_type": "Sensitive health-data breach",
+        "dpdpa_section": "IT Act §43A / §70B",
+        "summary": "A reported breach exposed policyholder health and personal data of Star Health customers, prompting CERT-In and IRDAI scrutiny and litigation over the alleged leak.",
+        "penalty_amount": "Investigation",
+        "outcome": "Investigation Ongoing",
+        "source_url": "https://www.cert-in.org.in/"
+      }
+    ],
+    "courts_case_law": [
+      {
+        "id": "IND-SC-001",
+        "date": "2017-08-24",
+        "authority": "High Court / Supreme Court",
+        "company": "K.S. Puttaswamy v Union of India",
+        "sector": "Government",
+        "violation_type": "Right to privacy",
+        "dpdpa_section": "Constitution Art. 21",
+        "summary": "A nine-judge Supreme Court bench unanimously held privacy to be a fundamental right, laying the constitutional foundation for India's data-protection regime.",
+        "penalty_amount": "Landmark judgment",
+        "outcome": "Adjudication Order Issued",
+        "source_url": "https://main.sci.gov.in/"
+      }
+    ],
+    "international_benchmarks": [
+      {
+        "id": "INTL-EU-001",
+        "date": "2023-05-22",
+        "authority": "Irish Data Protection Commission",
+        "company": "Meta Platforms",
+        "sector": "Social Media / Tech",
+        "violation_type": "Unlawful EU–US data transfer",
+        "dpdpa_section": "GDPR Art. 46",
+        "summary": "The Irish DPC fined Meta €1.2 billion — the largest GDPR penalty to date — for transferring EU user data to the US without adequate safeguards. A benchmark for cross-border transfer risk.",
+        "penalty_amount": "€1.2 Billion",
+        "outcome": "Fine Imposed",
+        "source_url": "https://www.dataprotection.ie/"
+      },
+      {
+        "id": "INTL-EU-002",
+        "date": "2024-10-24",
+        "authority": "Irish Data Protection Commission",
+        "company": "LinkedIn",
+        "sector": "Social Media / Tech",
+        "violation_type": "Behavioural-advertising consent",
+        "dpdpa_section": "GDPR Art. 6",
+        "summary": "The Irish DPC fined LinkedIn €310 million over unlawful processing of member data for targeted advertising — relevant to Indian IT/ITES firms serving EU data subjects.",
+        "penalty_amount": "€310 Million",
+        "outcome": "Fine Imposed",
+        "source_url": "https://www.dataprotection.ie/"
+      }
+    ]
+  }
+}

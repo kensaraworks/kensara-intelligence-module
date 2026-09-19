@@ -1,0 +1,22 @@
+name: Commit snapshot
+description: Commit web/data/enforcement.json if it changed.
+inputs:
+  message:
+    description: Commit message
+    required: false
+    default: "chore: refresh enforcement snapshot"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        git config user.name  "kensara-bot"
+        git config user.email "actions@github.com"
+        if [[ -n "$(git status --porcelain web/data/)" ]]; then
+          git add web/data/
+          git commit -m "${{ inputs.message }}"
+          git push
+          echo "Data committed."
+        else
+          echo "No data changes."
+        fi
