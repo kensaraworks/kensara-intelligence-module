@@ -5,9 +5,10 @@
  * from the `enforcement_public` view (RLS-guarded, read-only). */
 
 const CONFIG = {
-  // Optional live refresh. Leave blank to use the static JSON only.
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  // Live refresh from Supabase (RLS-protected anon key). Falls back to the
+  // committed data/enforcement.json if unreachable.
+  SUPABASE_URL: "https://cqjjmednofcdjrigjaer.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxamptZWRub2ZjZGpyaWdqYWVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MTYyMzIsImV4cCI6MjEwNTM5MjIzMn0.OhVpRSjByOA7L__Ew94LxYp-xREhQjMu-LUx4zeT9Dg",
 };
 
 const SECTION_META = {

@@ -10,8 +10,8 @@
  *     through to the public tracker on the same origin. */
 
 // ── Configure these two values (safe to be public) ─────────────────────────
-const SUPABASE_URL = "";        // e.g. https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = "";   // the anon/public key
+const SUPABASE_URL = "https://cqjjmednofcdjrigjaer.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxamptZWRub2ZjZGpyaWdqYWVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MTYyMzIsImV4cCI6MjEwNTM5MjIzMn0.OhVpRSjByOA7L__Ew94LxYp-xREhQjMu-LUx4zeT9Dg";   // anon/public key — RLS-protected
 
 const DEMO = !SUPABASE_URL || !SUPABASE_ANON_KEY ||
              new URLSearchParams(location.search).has("demo");
