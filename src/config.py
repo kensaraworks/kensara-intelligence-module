@@ -54,8 +54,8 @@ class Settings:
     llm_provider: str = os.getenv("LLM_PROVIDER", "").strip().lower()
 
     # Model ids (free-tier friendly defaults)
-    groq_model: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    groq_model: str = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
     # ── Alerting ─────────────────────────────────────────────────────────

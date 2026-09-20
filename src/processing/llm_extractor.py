@@ -88,13 +88,27 @@ async def _via_groq(prompt: str) -> str | None:
         from groq import AsyncGroq
 
         client = AsyncGroq(api_key=settings.groq_api_key)
-        resp = await client.chat.completions.create(
-            model=settings.groq_model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-            temperature=0.1,
-        )
-        return resp.choices[0].message.content
+        candidates = [settings.groq_model]
+        for fb in ["llama-3.1-8b-instant", "openai/gpt-oss-120b", "openai/gpt-oss-20b"]:
+            if fb not in candidates:
+                candidates.append(fb)
+
+        last_exc = None
+        for model_name in candidates:
+            try:
+                resp = await client.chat.completions.create(
+                    model=model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    response_format={"type": "json_object"},
+                    temperature=0.1,
+                )
+                return resp.choices[0].message.content
+            except Exception as e:
+                last_exc = e
+                continue
+        if last_exc:
+            log.warning("llm.groq_failed", error=str(last_exc))
+        return None
     except Exception as exc:
         log.warning("llm.groq_failed", error=str(exc))
         return None
@@ -105,12 +119,26 @@ async def _via_gemini(prompt: str) -> str | None:
         import google.generativeai as genai
 
         genai.configure(api_key=settings.gemini_api_key)
-        model = genai.GenerativeModel(settings.gemini_model)
-        resp = await model.generate_content_async(
-            prompt,
-            generation_config={"temperature": 0.1, "response_mime_type": "application/json"},
-        )
-        return resp.text
+        candidates = [settings.gemini_model]
+        for fb in ["gemini-2.5-flash", "gemini-1.5-flash"]:
+            if fb not in candidates:
+                candidates.append(fb)
+
+        last_exc = None
+        for model_name in candidates:
+            try:
+                model = genai.GenerativeModel(model_name)
+                resp = await model.generate_content_async(
+                    prompt,
+                    generation_config={"temperature": 0.1, "response_mime_type": "application/json"},
+                )
+                return resp.text
+            except Exception as e:
+                last_exc = e
+                continue
+        if last_exc:
+            log.warning("llm.gemini_failed", error=str(last_exc))
+        return None
     except Exception as exc:
         log.warning("llm.gemini_failed", error=str(exc))
         return None
