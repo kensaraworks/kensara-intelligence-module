@@ -35,11 +35,19 @@ def write_snapshot(path: Path | str = DEFAULT_PATH) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Idempotency: if only the timestamp would change, leave the file untouched
-    # so scheduled runs don't produce a stream of no-op commits.
     if path.exists():
         try:
             existing = json.loads(path.read_text(encoding="utf-8"))
+            # Safety: never overwrite a non-empty baseline with an empty snapshot.
+            # An empty read is almost always a transient DB error, not a real
+            # "zero published cases" — refuse to wipe the committed tracker.
+            new_total = snapshot["statistics"]["total_all_sections"]
+            old_total = existing.get("statistics", {}).get("total_all_sections", 0)
+            if new_total == 0 and old_total > 0:
+                log.warning("snapshot.refused_empty_overwrite", existing_total=old_total)
+                return path
+            # Idempotency: if only the timestamp would change, leave it untouched
+            # so scheduled runs don't produce a stream of no-op commits.
             if _data_signature(existing) == _data_signature(snapshot):
                 log.info("snapshot.unchanged", path=str(path))
                 return path

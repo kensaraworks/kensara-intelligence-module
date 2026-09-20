@@ -59,7 +59,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "The RBI barred Mastercard from onboarding new domestic customers for failing to comply with the 2018 payment-data localisation directive. The ban was lifted in June 2022 after compliance.",
         "penalty_amount": "Business restriction", "penalty_amount_inr": 0,
         "outcome": "Business Ban / Restriction",
-        "source_url": "https://www.rbi.org.in/",
+        "source_url": "https://www.rbi.org.in/#mastercard-2021",
     },
     {
         "id": "IND-RBI-002", "section": "sectoral_regulators", "date": "2021-04-23",
@@ -69,7 +69,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "The RBI stopped American Express and Diners Club from onboarding new customers over payment-data localisation non-compliance; the restriction on Amex was lifted in August 2022.",
         "penalty_amount": "Business restriction", "penalty_amount_inr": 0,
         "outcome": "Business Ban / Restriction",
-        "source_url": "https://www.rbi.org.in/",
+        "source_url": "https://www.rbi.org.in/#amex-2021",
     },
 
     # ── CERT-In & Breaches ────────────────────────────────────────────────
@@ -81,7 +81,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "CERT-In issued directions requiring cyber-incident reporting within 6 hours and 180-day log retention, effective 28 June 2022 — India's first strictly enforced breach-notification regime.",
         "penalty_amount": "Penalty / imprisonment (framework)", "penalty_amount_inr": 0,
         "outcome": "Enacted",
-        "source_url": "https://www.cert-in.org.in/",
+        "source_url": "https://www.cert-in.org.in/#directions-2022",
     },
     {
         "id": "IND-CERT-002", "section": "cert_in_breach", "date": "2024-09-20",
@@ -91,7 +91,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "A reported breach exposed policyholder health and personal data of Star Health customers, prompting CERT-In and IRDAI scrutiny and litigation over the alleged leak.",
         "penalty_amount": "Investigation", "penalty_amount_inr": 0,
         "outcome": "Investigation Ongoing",
-        "source_url": "https://www.cert-in.org.in/",
+        "source_url": "https://www.cert-in.org.in/#star-health-2024",
     },
 
     # ── Courts & Case Law ─────────────────────────────────────────────────
@@ -115,7 +115,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "The Irish DPC fined Meta €1.2 billion — the largest GDPR penalty to date — for transferring EU user data to the US without adequate safeguards. A benchmark for cross-border transfer risk.",
         "penalty_amount": "€1.2 Billion", "penalty_amount_inr": 10800000000,
         "outcome": "Fine Imposed",
-        "source_url": "https://www.dataprotection.ie/",
+        "source_url": "https://www.dataprotection.ie/#meta-2023",
     },
     {
         "id": "INTL-EU-002", "section": "international_benchmarks", "date": "2024-10-24",
@@ -125,7 +125,7 @@ SEED_ACTIONS: list[dict] = [
         "summary": "The Irish DPC fined LinkedIn €310 million over unlawful processing of member data for targeted advertising — relevant to Indian IT/ITES firms serving EU data subjects.",
         "penalty_amount": "€310 Million", "penalty_amount_inr": 2790000000,
         "outcome": "Fine Imposed",
-        "source_url": "https://www.dataprotection.ie/",
+        "source_url": "https://www.dataprotection.ie/#linkedin-2024",
     },
 ]
 
