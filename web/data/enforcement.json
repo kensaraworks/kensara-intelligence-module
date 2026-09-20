@@ -2,7 +2,7 @@
   "metadata": {
     "last_updated": "2026-09-20",
     "last_updated_formatted": "20 September 2026",
-    "generated_at": "2026-09-20T06:37:42.825609+00:00"
+    "generated_at": "2026-09-20T06:38:24.639068+00:00"
   },
   "statistics": {
     "total_all_sections": 10,
@@ -22,21 +22,6 @@
   "sections": {
     "dpdpa_board": [
       {
-        "id": "IND-DPDPA-001",
-        "date": "2023-08-11",
-        "authority": "MeitY",
-        "company": "Statute — All Data Fiduciaries",
-        "sector": "Government",
-        "violation_type": "Legislation enacted",
-        "dpdpa_section": "DPDP Act 2023",
-        "summary": "The Digital Personal Data Protection Act, 2023 received Presidential assent, establishing India's first comprehensive data-protection statute with penalties up to ₹250 crore per breach.",
-        "penalty_amount": "Up to ₹250 Cr (framework)",
-        "outcome": "Enacted",
-        "source_url": "https://www.meity.gov.in/data-protection-framework",
-        "sources": [],
-        "official_source_url": ""
-      },
-      {
         "id": "IND-DPDPA-002",
         "date": "2025-01-03",
         "authority": "MeitY",
@@ -49,7 +34,22 @@
         "outcome": "Consultation",
         "source_url": "https://www.meity.gov.in/",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
+      },
+      {
+        "id": "IND-DPDPA-001",
+        "date": "2023-08-11",
+        "authority": "MeitY",
+        "company": "Statute — All Data Fiduciaries",
+        "sector": "Government",
+        "violation_type": "Legislation enacted",
+        "dpdpa_section": "DPDP Act 2023",
+        "summary": "The Digital Personal Data Protection Act, 2023 received Presidential assent, establishing India's first comprehensive data-protection statute with penalties up to ₹250 crore per breach.",
+        "penalty_amount": "Up to ₹250 Cr (framework)",
+        "outcome": "Enacted",
+        "source_url": "https://www.meity.gov.in/data-protection-framework",
+        "sources": [],
+        "official_source_url": null
       }
     ],
     "sectoral_regulators": [
@@ -66,7 +66,7 @@
         "outcome": "Fine Imposed",
         "source_url": "https://www.cci.gov.in/",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
       },
       {
         "id": "IND-RBI-001",
@@ -81,7 +81,7 @@
         "outcome": "Business Ban / Restriction",
         "source_url": "https://www.rbi.org.in/#mastercard-2021",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
       },
       {
         "id": "IND-RBI-002",
@@ -96,25 +96,10 @@
         "outcome": "Business Ban / Restriction",
         "source_url": "https://www.rbi.org.in/#amex-2021",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
       }
     ],
     "cert_in_breach": [
-      {
-        "id": "IND-CERT-001",
-        "date": "2022-04-28",
-        "authority": "CERT-In",
-        "company": "All body corporates & intermediaries",
-        "sector": "Government",
-        "violation_type": "6-hour breach reporting mandate",
-        "dpdpa_section": "IT Act §70B(6) — CERT-In 2022 Directions",
-        "summary": "CERT-In issued directions requiring cyber-incident reporting within 6 hours and 180-day log retention, effective 28 June 2022 — India's first strictly enforced breach-notification regime.",
-        "penalty_amount": "Penalty / imprisonment (framework)",
-        "outcome": "Enacted",
-        "source_url": "https://www.cert-in.org.in/#directions-2022",
-        "sources": [],
-        "official_source_url": ""
-      },
       {
         "id": "IND-CERT-002",
         "date": "2024-09-20",
@@ -128,7 +113,22 @@
         "outcome": "Investigation Ongoing",
         "source_url": "https://www.cert-in.org.in/#star-health-2024",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
+      },
+      {
+        "id": "IND-CERT-001",
+        "date": "2022-04-28",
+        "authority": "CERT-In",
+        "company": "All body corporates & intermediaries",
+        "sector": "Government",
+        "violation_type": "6-hour breach reporting mandate",
+        "dpdpa_section": "IT Act §70B(6) — CERT-In 2022 Directions",
+        "summary": "CERT-In issued directions requiring cyber-incident reporting within 6 hours and 180-day log retention, effective 28 June 2022 — India's first strictly enforced breach-notification regime.",
+        "penalty_amount": "Penalty / imprisonment (framework)",
+        "outcome": "Enacted",
+        "source_url": "https://www.cert-in.org.in/#directions-2022",
+        "sources": [],
+        "official_source_url": null
       }
     ],
     "courts_case_law": [
@@ -145,25 +145,10 @@
         "outcome": "Adjudication Order Issued",
         "source_url": "https://main.sci.gov.in/",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
       }
     ],
     "international_benchmarks": [
-      {
-        "id": "INTL-EU-001",
-        "date": "2023-05-22",
-        "authority": "Irish Data Protection Commission",
-        "company": "Meta Platforms",
-        "sector": "Social Media / Tech",
-        "violation_type": "Unlawful EU–US data transfer",
-        "dpdpa_section": "GDPR Art. 46",
-        "summary": "The Irish DPC fined Meta €1.2 billion — the largest GDPR penalty to date — for transferring EU user data to the US without adequate safeguards. A benchmark for cross-border transfer risk.",
-        "penalty_amount": "€1.2 Billion",
-        "outcome": "Fine Imposed",
-        "source_url": "https://www.dataprotection.ie/#meta-2023",
-        "sources": [],
-        "official_source_url": ""
-      },
       {
         "id": "INTL-EU-002",
         "date": "2024-10-24",
@@ -177,7 +162,22 @@
         "outcome": "Fine Imposed",
         "source_url": "https://www.dataprotection.ie/#linkedin-2024",
         "sources": [],
-        "official_source_url": ""
+        "official_source_url": null
+      },
+      {
+        "id": "INTL-EU-001",
+        "date": "2023-05-22",
+        "authority": "Irish Data Protection Commission",
+        "company": "Meta Platforms",
+        "sector": "Social Media / Tech",
+        "violation_type": "Unlawful EU–US data transfer",
+        "dpdpa_section": "GDPR Art. 46",
+        "summary": "The Irish DPC fined Meta €1.2 billion — the largest GDPR penalty to date — for transferring EU user data to the US without adequate safeguards. A benchmark for cross-border transfer risk.",
+        "penalty_amount": "€1.2 Billion",
+        "outcome": "Fine Imposed",
+        "source_url": "https://www.dataprotection.ie/#meta-2023",
+        "sources": [],
+        "official_source_url": null
       }
     ]
   }
