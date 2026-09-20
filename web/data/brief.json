@@ -1,0 +1,85 @@
+{
+  "period": "2026-W38",
+  "markdown": "# Enforcement Intelligence Brief — 2026-W38\n\n**Verified cases in dataset:** 10\n**Most active authorities:** MeitY (2), Irish Data Protection Commission (2), Reserve Bank of India (2), Competition Commission of India (1)\n**Most-cited provisions:** RBI Storage of Payment System Data (2018) (2), DPDP Rules (Draft) (1), Competition Act §4 (1), GDPR Art. 6 (1)\n\n## Top signals this week\n- [15] India Digital Personal Data Protection Act (DPDPA 2025) - CookieYes\n- [14] Module 4: Enforcement & Penalties | DPDPA Certificate Course\n- [14] Avaana Capital leads Rs 43 Cr pre-Series A round in deeptech company DheyaTech\n- [14] Data Protection Commission announces Final Decision following Inquiry into the Health Service Executive (HSE)\n- [13] India wants 1 lakh chip engineers: MeitY Secretary S Krishnan on what students must learn to be ready",
+  "stats": {
+    "verified_cases": 10,
+    "by_section": {
+      "dpdpa_board": 2,
+      "sectoral_regulators": 3,
+      "international_benchmarks": 2,
+      "cert_in_breach": 2,
+      "courts_case_law": 1
+    },
+    "by_sector": {
+      "Government": 4,
+      "Social Media / Tech": 3,
+      "Healthcare": 1,
+      "Fintech": 2
+    },
+    "top_authorities": [
+      [
+        "MeitY",
+        2
+      ],
+      [
+        "Irish Data Protection Commission",
+        2
+      ],
+      [
+        "Reserve Bank of India",
+        2
+      ],
+      [
+        "Competition Commission of India",
+        1
+      ]
+    ],
+    "most_cited_provisions": [
+      [
+        "RBI Storage of Payment System Data (2018)",
+        2
+      ],
+      [
+        "DPDP Rules (Draft)",
+        1
+      ],
+      [
+        "Competition Act §4",
+        1
+      ],
+      [
+        "GDPR Art. 6",
+        1
+      ]
+    ],
+    "total_penalty_inr": 18221400000.0,
+    "top_stories": [
+      {
+        "headline": "India Digital Personal Data Protection Act (DPDPA 2025) - CookieYes",
+        "score": 15,
+        "url": "https://www.cookieyes.com/blog/india-digital-personal-data-protection-act-dpdpa/"
+      },
+      {
+        "headline": "Module 4: Enforcement & Penalties | DPDPA Certificate Course",
+        "score": 14,
+        "url": "https://www.dpdpa.com/dpdpa-module-4.html"
+      },
+      {
+        "headline": "Avaana Capital leads Rs 43 Cr pre-Series A round in deeptech company DheyaTech",
+        "score": 14,
+        "url": "https://entrackr.com/snippets/avaana-capital-leads-rs-43-cr-pre-series-a-round-in-deeptech-company-dheyatech-12544665"
+      },
+      {
+        "headline": "Data Protection Commission announces Final Decision following Inquiry into the Health Service Executive (HSE)",
+        "score": 14,
+        "url": "https://www.edpb.europa.eu/news/data-protection-commission-announces-final-decision-following-inquiry-into-the-health-service_en"
+      },
+      {
+        "headline": "India wants 1 lakh chip engineers: MeitY Secretary S Krishnan on what students must learn to be ready",
+        "score": 13,
+        "url": "https://yourstory.com/2026/09/india-semiconductor-mission-1-lakh-chip-engineers-krishnan"
+      }
+    ]
+  },
+  "generated_at": "2026-09-20T07:20:52.005595+00:00"
+}
