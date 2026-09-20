@@ -468,13 +468,14 @@ async function loadInsights() {
 //  Manual triggers (optional GitHub workflow_dispatch)
 // ══════════════════════════════════════════════════════════════════════════
 (function initOps() {
-  $("ghRepo").value = localStorage.getItem("gh_repo") || "";
+  $("ghRepo").value = localStorage.getItem("gh_repo") || "kensaraworks/kensara-intelligence-module";
   $("ghToken").value = localStorage.getItem("gh_token") || "";
   const save = () => {
     localStorage.setItem("gh_repo", $("ghRepo").value.trim());
     localStorage.setItem("gh_token", $("ghToken").value.trim());
   };
-  $("ghRepo").onchange = save; $("ghToken").onchange = save;
+  $("ghRepo").oninput = save; $("ghRepo").onchange = save;
+  $("ghToken").oninput = save; $("ghToken").onchange = save;
   document.querySelectorAll(".wf-btn").forEach((b) => {
     b.onclick = async () => {
       save();
