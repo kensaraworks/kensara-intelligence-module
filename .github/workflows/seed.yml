@@ -1,0 +1,33 @@
+name: Seed Baseline Dataset
+
+# One-off: push the curated baseline enforcement cases into Supabase
+# (needs_review = false, so they appear on the public tracker) and rebuild the
+# committed JSON snapshot. Run manually from the Actions tab when needed.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Seed Supabase + rebuild snapshot
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.seed
+      - name: Commit refreshed snapshot
+        uses: ./.github/actions/commit-snapshot
+        with:
+          message: "chore: seed baseline dataset"
