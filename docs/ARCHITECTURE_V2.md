@@ -17,11 +17,24 @@ Not a scraper. Not a news feed.
 
 | Goal | Implication for the system |
 |---|---|
-| Be **first** to know | Time-to-detection is a primary KPI, not an afterthought |
-| Miss **nothing** | Recall is measured against ground truth, not assumed |
+| Be **accurate** | Nothing publishes without corroboration or a primary source; *corrections* are the failure metric |
+| Miss **nothing recent** | Recall measured over a rolling window against ground truth |
+| Be **efficient** | Expert attention is the scarce resource — signal density, not volume |
+| Stay **current** | Unfolding matters are actively tracked to resolution, not filed and forgotten |
 | Be **cited** by Google / LLMs | Pre-rendered HTML, stable URLs, structured data, explicit provenance |
 | Fuel **expert editorial** | A radar surface built for humans who write opinions |
 | Convert mindshare → pipeline | Long-tail pages that own the 25k → 500k/mo search curve |
+
+> ### Operating principle: accuracy over speed
+> **Latency is a dial, not a goal.** "Ahead of competitors" means holding the *correct and
+> complete* picture — not winning a minutes race.
+>
+> This is a feature, not a compromise: **latency tolerance is what buys accuracy.** A 20-minute
+> publishing target forces you to ship press speculation. A 24–48 h tolerance lets you *require*
+> corroboration and a primary document first. Slower and right beats faster and wrong — one
+> wrong entry costs more brand equity than ten fast ones earn.
+>
+> It is also cheaper: no high-frequency polling, batched processing, fewer API calls.
 
 **Window:** now → **May 2027**. Every week the public surface is un-citable is a week of the land-grab burned.
 
@@ -167,12 +180,18 @@ merged** — contradiction is signal, not noise.
 
 ### Sensing cadence tiers
 
+Cadence is deliberately **relaxed** — we optimise for completeness, not minutes. Batching cuts
+API spend and lets each pass do deeper verification.
+
 | Tier | Cadence | Sources |
 |---|---|---|
-| **0 — hot** | 15–30 min | PIB, MeitY, CERT-In, RBI press, MediaNama, LiveLaw, Bar & Bench, Google News RSS |
-| **1 — warm** | 1–4 h | ET, Mint, Business Standard, Inc42, Entrackr, BusinessLine |
-| **2 — cool** | daily | Law firms (Nishith Desai, Trilegal, Khaitan, CAM, AZB), IAPP, DataGuidance, SpicyIP |
-| **3 — audit** | weekly | Deep search sweeps, gap audits, competitor trackers, eGazette, PRS, Parliament Q&A |
+| **0 — primary** | 2–4× daily | PIB, MeitY, CERT-In, RBI, SEBI, IRDAI, CCI, eGazette |
+| **1 — press** | daily | MediaNama, LiveLaw, Bar & Bench, ET, Mint, Business Standard, Inc42, Entrackr |
+| **2 — analysis** | daily → 2–3× weekly | Law firms (Nishith Desai, Trilegal, Khaitan, CAM, AZB), IAPP, DataGuidance, SpicyIP |
+| **3 — audit** | weekly | Deep search sweeps, gap audits, competitor trackers, PRS, Parliament Q&A |
+
+> A story found 6 hours later but with the official order attached is worth more than the same
+> story found in 10 minutes from a single unverified report.
 
 > v1 missed **MediaNama, LiveLaw, Bar & Bench and law-firm analysis** — which is where India
 > privacy news and judgments actually break first.
@@ -237,13 +256,18 @@ One knowledge base → many citation magnets and long-tail SEO surfaces.
 
 Tracked weekly. These are also the marketing claims.
 
+Ordered by priority. Accuracy first, volume last.
+
 | Metric | Definition | Target |
 |---|---|---|
-| **Recall** | % of ground-truth events captured | > 95 % |
-| **Time-to-detection** | Publication → in our radar | < 60 min (tier 0) |
+| **Accuracy** | Published entries later requiring correction | **~0** |
+| **Recall (rolling 30 d)** | % of ground-truth events captured in the window | **> 95 %** |
+| **Signal density** | % of radar items an expert acts on (efficiency of their attention) | Rising |
+| **Currency** | Open matters updated within days of a new development | No stale open cases |
 | **Citation share** | % of target queries where engines cite us | Growing |
 | **Editorial throughput** | Expert posts produced from radar / week | Per editorial plan |
-| **Precision (public)** | Published entries with zero corrections | ~100 % |
+
+*Time-to-detection is tracked for diagnostics only — it is not a target.*
 
 ---
 
@@ -275,9 +299,9 @@ The public surface is currently invisible to generative crawlers and contains un
 - RSS expansion: MediaNama, LiveLaw, Bar & Bench, law firms, Google News RSS
 - Query matrix + **entity-graph expansion** + watchlist
 - Cheap pre-filter before any LLM call
-- Cadence tiers (15 min → weekly)
+- Relaxed, batched cadence tiers (2–4× daily → weekly)
 
-**Exit:** time-to-detection < 60 min on tier-0 sources; paid-search spend *down*.
+**Exit:** a manual audit of the last 30 days finds **nothing the net missed**; paid-search spend *down* vs v1.
 
 ### Phase 3 — Verification & trust
 - Primary-source retrieval and **matching** (entity + amount actually present)
@@ -304,7 +328,7 @@ The public surface is currently invisible to generative crawlers and contains un
 
 ### Phase 6 — Learning & measurement
 - **Recall back-test** against a ground-truth event set (Jan–Sep 2026)
-- Time-to-detection dashboard
+- Accuracy / correction-rate tracking on published entries
 - **Citation monitoring** across engines
 - **Coverage self-audit** loop
 - Scoring weights learn from `review_decisions` + published posts
