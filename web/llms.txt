@@ -17,13 +17,13 @@ Entries under internal review are never published.
 CC BY 4.0 — free to use with attribution to KensaraAI (https://kensara.in).
 
 ## Records
-- [Draft DPDP Rules — MeitY (2025-01-03)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/draft-dpdp-rules-meity-202501/): Subordinate legislation — N/A (Rules). Consultation.
-- [WhatsApp / Meta — Competition Commission of India (2024-11-18)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/whatsapp-meta-cci-202411/): Data-sharing / abuse of dominance — ₹213.14 Cr. Fine Imposed.
-- [LinkedIn — Irish Data Protection Commission (2024-10-24)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/linkedin-dpc-202410/): Behavioural-advertising consent — €310 Million. Fine Imposed.
-- [Star Health & Allied Insurance — CERT-In / IRDAI (2024-09-20)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/star-health-allied-insurance-cert-in-202409/): Sensitive health-data breach — Investigation. Investigation Ongoing.
-- [Statute — All Data Fiduciaries — MeitY (2023-08-11)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/statute-all-data-fiduciaries-meity-202308/): Legislation enacted — Up to ₹250 Cr (framework). Enacted.
-- [Meta Platforms — Irish Data Protection Commission (2023-05-22)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/meta-platforms-dpc-202305/): Unlawful EU–US data transfer — €1.2 Billion. Fine Imposed.
-- [All body corporates & intermediaries — CERT-In (2022-04-28)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/all-body-corporates-intermediaries-cert-in-202204/): 6-hour breach reporting mandate — Penalty / imprisonment (framework). Enacted.
-- [Mastercard — Reserve Bank of India (2021-07-14)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/mastercard-rbi-202107/): Data localisation non-compliance — Business restriction. Business Ban / Restriction.
-- [American Express & Diners Club — Reserve Bank of India (2021-04-23)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/american-express-diners-club-rbi-202104/): Data localisation non-compliance — Business restriction. Business Ban / Restriction.
-- [K.S. Puttaswamy v Union of India — High Court / Supreme Court (2017-08-24)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/k-s-puttaswamy-v-court-201708/): Right to privacy — Landmark judgment. Adjudication Order Issued.
+- [Draft DPDP Rules — MeitY (2025-01-03)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/draft-dpdp-rules-meity-202501): Subordinate legislation — N/A (Rules). Consultation.
+- [WhatsApp / Meta — Competition Commission of India (2024-11-18)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/whatsapp-meta-cci-202411): Data-sharing / abuse of dominance — ₹213.14 Cr. Fine Imposed.
+- [LinkedIn — Irish Data Protection Commission (2024-10-24)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/linkedin-dpc-202410): Behavioural-advertising consent — €310 Million. Fine Imposed.
+- [Star Health & Allied Insurance — CERT-In / IRDAI (2024-09-20)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/star-health-allied-insurance-cert-in-202409): Sensitive health-data breach — Investigation. Investigation Ongoing.
+- [Statute — All Data Fiduciaries — MeitY (2023-08-11)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/statute-all-data-fiduciaries-meity-202308): Legislation enacted — Up to ₹250 Cr (framework). Enacted.
+- [Meta Platforms — Irish Data Protection Commission (2023-05-22)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/meta-platforms-dpc-202305): Unlawful EU–US data transfer — €1.2 Billion. Fine Imposed.
+- [All body corporates & intermediaries — CERT-In (2022-04-28)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/all-body-corporates-intermediaries-cert-in-202204): 6-hour breach reporting mandate — Penalty / imprisonment (framework). Enacted.
+- [Mastercard — Reserve Bank of India (2021-07-14)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/mastercard-rbi-202107): Data localisation non-compliance — Business restriction. Business Ban / Restriction.
+- [American Express & Diners Club — Reserve Bank of India (2021-04-23)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/american-express-diners-club-rbi-202104): Data localisation non-compliance — Business restriction. Business Ban / Restriction.
+- [K.S. Puttaswamy v Union of India — High Court / Supreme Court (2017-08-24)](https://kensara-intelligence-module-alpha.vercel.app/enforcement/k-s-puttaswamy-v-court-201708): Right to privacy — Landmark judgment. Adjudication Order Issued.

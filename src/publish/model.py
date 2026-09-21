@@ -127,9 +127,10 @@ class RenderEvent:
 
     @property
     def url_path(self) -> str:
-        # Directory-style so the canonical URL is identical on Vercel, GitHub
-        # Pages and local file serving — no .html → clean-URL redirects.
-        return f"enforcement/{self.slug}/"
+        # Written to enforcement/<slug>/index.html but linked WITHOUT a trailing
+        # slash, to match Vercel's `trailingSlash: false`. Canonical URLs must
+        # return 200, never a 308 — a redirecting canonical weakens citation.
+        return f"enforcement/{self.slug}"
 
     @property
     def title(self) -> str:
