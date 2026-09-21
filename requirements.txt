@@ -20,6 +20,9 @@ groq==0.11.0
 google-generativeai==0.8.3
 openai==1.54.4            # fallback only
 
+# Templating (static site rendering)
+Jinja2==3.1.4
+
 # Logging
 structlog==24.4.0
 

@@ -206,5 +206,5 @@ if __name__ == "__main__":
     else:
         n = load_to_supabase()
         print(f"seeded {n} rows to Supabase")
-        from src.publish.snapshot import write_snapshot
-        print("snapshot:", write_snapshot())
+        from src.publish.snapshot import publish_all
+        print("published:", publish_all())

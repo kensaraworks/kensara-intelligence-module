@@ -60,5 +60,22 @@ def write_snapshot(path: Path | str = DEFAULT_PATH) -> Path:
     return path
 
 
+def publish_all(path: Path | str = DEFAULT_PATH) -> dict:
+    """Write the JSON snapshot AND re-render the static site.
+
+    Every pipeline run that can change published data calls this, so the
+    crawlable HTML never drifts from the data.
+    """
+    snap = write_snapshot(path)
+    try:
+        from src.publish.render import render_site
+
+        result = render_site()
+    except Exception as exc:  # rendering must never sink a pipeline run
+        log.warning("publish.render_failed", error=str(exc))
+        result = {"status": "error", "error": str(exc)}
+    return {"snapshot": str(snap), "render": result}
+
+
 if __name__ == "__main__":
     write_snapshot()

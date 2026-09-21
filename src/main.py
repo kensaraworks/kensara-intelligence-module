@@ -8,7 +8,8 @@ Usage (locally or in GitHub Actions):
     python -m src.main brief           # weekly executive brief + trend aggregates
     python -m src.main reverify        # re-check stale open cases for updates
     python -m src.main angles          # story -> SEO content angles
-    python -m src.main snapshot        # rebuild web/data/enforcement.json only
+    python -m src.main snapshot        # rebuild JSON snapshot + re-render static site
+    python -m src.main render          # re-render the static site only
     python -m src.main all             # run everything (handy for first seed)
 """
 from __future__ import annotations
@@ -25,7 +26,7 @@ from src.agents.enforcement_tracker import update_enforcement_tracker
 from src.agents.news_scan import run_news_scan
 from src.agents.reverify import run_reverification
 from src.config import settings
-from src.publish.snapshot import write_snapshot
+from src.publish.snapshot import publish_all, write_snapshot
 
 structlog.configure(
     processors=[
@@ -61,7 +62,10 @@ async def _dispatch(cmd: str) -> None:
     elif cmd == "angles":
         print(await generate_content_angles())
     elif cmd == "snapshot":
-        print({"snapshot": str(write_snapshot())})
+        print(publish_all())
+    elif cmd == "render":
+        from src.publish.render import render_site
+        print(render_site())
     elif cmd == "all":
         print(await run_news_scan(deep=True))
         print(await update_enforcement_tracker())

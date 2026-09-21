@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}DPDPA Enforcement Tracker India — KensaraAI{% endblock %}</title>
+  <meta name="description" content="{% block description %}Live database of Indian data privacy enforcement actions — DPDPA, CERT-In, IT Act 43A, RBI data localisation.{% endblock %}" />
+  <link rel="canonical" href="{{ site.base_url }}/{% block canonical %}{% endblock %}" />
+  <meta property="og:title" content="{{ self.title() }}" />
+  <meta property="og:description" content="{{ self.description() }}" />
+  <meta property="og:url" content="{{ site.base_url }}/{{ self.canonical() }}" />
+  <meta property="og:type" content="{% block ogtype %}website{% endblock %}" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .badge-fine { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+    .badge-ban { background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+    .badge-investigation { background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; }
+    .badge-compliance { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+    .badge-enacted { background:#faf5ff; color:#7c3aed; border:1px solid #e9d5ff; }
+    .badge-other { background:#f9fafb; color:#374151; border:1px solid #e5e7eb; }
+    .section-header { background:linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 100%); }
+    .table-row-hover:hover { background-color:#f8faff; }
+  </style>
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+  <nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <a href="{{ site.base_url }}/" class="flex items-center gap-2">
+        <span class="text-xl font-bold text-blue-700">Kensara<span class="text-gray-800">AI</span></span>
+      </a>
+      <div class="flex items-center gap-4 text-sm">
+        <a href="https://www.kensara.in/dpdpa" class="text-gray-600 hover:text-blue-700">DPDPA Guide</a>
+        <a href="https://www.kensara.in/expertise" class="text-gray-600 hover:text-blue-700">DSAR Automation</a>
+        <a href="https://www.kensara.in/book-demo" class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium">Request Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  {% block body %}{% endblock %}
+
+  <footer class="border-t border-gray-200 bg-white mt-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div><span class="font-bold text-blue-700">KensaraAI</span><span class="text-gray-500 text-sm ml-2">— India's first AI-native DPDPA compliance platform</span></div>
+        <div class="text-sm text-gray-500 text-center">
+          Maintained by <a href="https://kensara.in" class="text-blue-600 hover:underline">KensaraAI Private Limited</a> ·
+          <a href="https://www.kensara.in/book-demo" class="text-blue-600 hover:underline">Request Demo</a>
+        </div>
+        <div class="text-xs text-gray-400">Last updated: {{ site.last_updated }}</div>
+      </div>
+      <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 text-center">
+        Each entry carries a provenance label. Entries marked “Primary source confirmed” are backed by an
+        official document from the issuing authority; “Press reported” entries cite named news sources only.
+        Informational purposes — not legal advice.
+        <a href="https://creativecommons.org/licenses/by/4.0/" class="hover:underline ml-1" target="_blank" rel="noopener">CC BY 4.0</a> ·
+        <a href="{{ site.base_url }}/data/enforcement.json" class="hover:underline">JSON</a> ·
+        <a href="{{ site.base_url }}/data/enforcement.csv" class="hover:underline">CSV</a>
+      </div>
+    </div>
+  </footer>
+  {% block body_extra %}{% endblock %}
+</body>
+</html>

@@ -12,8 +12,8 @@ runs:
       run: |
         git config user.name  "kensara-bot"
         git config user.email "actions@github.com"
-        if [[ -n "$(git status --porcelain web/data/)" ]]; then
-          git add web/data/
+        if [[ -n "$(git status --porcelain web/)" ]]; then
+          git add web/
           git commit -m "${{ inputs.message }}"
           git push
           echo "Data committed."

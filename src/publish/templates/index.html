@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}DPDPA Enforcement Tracker India — {{ stats.total }} Cases | KensaraAI{% endblock %}
+{% block description %}India's most comprehensive database of data-privacy enforcement actions: DPDPA 2023, IT Act 43A, CERT-In directions, RBI data localisation, CCI fines and GDPR actions affecting Indian companies. {{ stats.total }} tracked cases with source provenance.{% endblock %}
+{% block canonical %}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{{ jsonld | safe }}
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="section-header text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center gap-2 bg-blue-600 bg-opacity-40 rounded-full px-3 py-1 text-sm mb-4">
+        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        Updated: {{ site.last_updated }}
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">DPDPA Enforcement Tracker India</h1>
+      <p class="text-blue-100 text-lg mb-6">
+        The most comprehensive public database of Indian data privacy enforcement actions —
+        covering DPDPA 2023, IT Act Section 43A, CERT-In directions, RBI data localisation
+        enforcement, CCI data-related fines, and GDPR actions affecting Indian companies.
+      </p>
+      <div class="flex flex-wrap gap-3 text-sm">
+        <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2">
+          <span class="font-bold text-xl">{{ stats.total }}</span><span class="text-blue-200 ml-1">Total cases tracked</span>
+        </div>
+        <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2">
+          <span class="font-bold text-xl">{{ stats.primary_confirmed }}</span><span class="text-blue-200 ml-1">Primary-source confirmed</span>
+        </div>
+        <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2">
+          <span class="font-bold text-xl">{{ stats.total_dpdpa_board }}</span><span class="text-blue-200 ml-1">DPDPA / Board milestones</span>
+        </div>
+        <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2">
+          <span class="font-bold text-xl">{{ stats.earliest_year }}</span><span class="text-blue-200 ml-1">Earliest case</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-amber-50 border-b border-amber-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-start gap-3 text-sm text-amber-800">
+    <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    <span><strong>DPDPA Board status:</strong> Formal DPDPA penalties (up to ₹250 crore per violation) begin once the Data Protection Board of India is fully operational and the DPDP Rules are enforced. Sectoral regulators (RBI, SEBI, IRDAI, CCI) and CERT-In are already actively enforcing today.</span>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"><div class="text-2xl font-bold text-blue-700">{{ stats.total_dpdpa_board }}</div><div class="text-sm text-gray-600 mt-1">DPDPA &amp; DPB</div><div class="text-xs text-gray-400 mt-1">Board &amp; rule milestones</div></div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"><div class="text-2xl font-bold text-emerald-600">{{ stats.total_sectoral_regulators }}</div><div class="text-sm text-gray-600 mt-1">Sectoral Regulators</div><div class="text-xs text-gray-400 mt-1">RBI · SEBI · IRDAI · CCI</div></div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"><div class="text-2xl font-bold text-orange-600">{{ stats.total_cert_in_breach }}</div><div class="text-sm text-gray-600 mt-1">CERT-In &amp; Breaches</div><div class="text-xs text-gray-400 mt-1">6-hour reporting mandate</div></div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"><div class="text-2xl font-bold text-purple-600">{{ stats.total_courts_case_law }}</div><div class="text-sm text-gray-600 mt-1">Courts &amp; Case Law</div><div class="text-xs text-gray-400 mt-1">SC · HCs · TDSAT · 43A</div></div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"><div class="text-2xl font-bold text-green-600">{{ stats.total_international }}</div><div class="text-sm text-gray-600 mt-1">Global Benchmarks</div><div class="text-xs text-gray-400 mt-1">GDPR / DPA — India-relevant</div></div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
+    <div class="flex flex-wrap gap-3 items-center">
+      <span class="text-sm font-medium text-gray-700">Filter:</span>
+      <button class="filter-btn active px-3 py-1.5 rounded-lg text-sm border border-blue-600 bg-blue-50 text-blue-700 font-medium" data-filter="all">All Cases</button>
+      {% for sid, label in section_order %}
+      <button class="filter-btn px-3 py-1.5 rounded-lg text-sm border border-gray-200 text-gray-600 hover:border-blue-300" data-filter="{{ sid }}">{{ label }}</button>
+      {% endfor %}
+      <div class="ml-auto">
+        <input type="text" id="searchInput" placeholder="Search company, sector, violation..." class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+      </div>
+    </div>
+  </div>
+
+  <div id="sectionsRoot">
+  {% for sid, label in section_order %}
+    {% set rows = grouped.get(sid, []) %}
+    <div class="mb-8 section-block" data-section="{{ sid }}">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="{{ section_badge[sid] }} text-xs font-bold px-3 py-1 rounded-full">{{ label }}</div>
+        <h2 class="text-lg font-semibold text-gray-900">{{ section_titles[sid] }}</h2>
+        <span class="text-xs text-gray-400">({{ rows|length }})</span>
+      </div>
+      <p class="text-sm text-gray-500 mb-4">{{ section_subtitles[sid] }}</p>
+      <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200"><tr>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Authority</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Company / Entity &amp; Summary</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Violation</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Penalty</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Outcome</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Provenance</th>
+          </tr></thead>
+          <tbody class="divide-y divide-gray-100">
+          {% for e in rows %}
+            <tr class="table-row-hover" data-category="{{ sid }}" data-sector="{{ e.sector }}">
+              <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ e.date }}</td>
+              <td class="px-4 py-3 font-medium text-gray-800">{{ e.authority }}</td>
+              <td class="px-4 py-3">
+                <a href="{{ site.base_url }}/{{ e.url_path }}" class="font-medium text-blue-700 hover:underline">{{ e.company }}</a>
+                <div class="text-gray-500 text-xs mt-1">{{ e.summary|truncate(180) }}</div>
+              </td>
+              <td class="px-4 py-3 text-xs text-gray-700">{{ e.violation_type }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ e.penalty_display }}</td>
+              <td class="px-4 py-3"><span class="{{ outcome_badge(e.outcome) }} text-xs px-2 py-1 rounded-full font-medium">{{ e.outcome }}</span></td>
+              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full border {{ e.tier.css }}" title="{{ e.tier.desc }}">{{ e.tier.icon }} {{ e.tier.short }}</span></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="7" class="px-4 py-6 text-center text-sm text-gray-400">No verified entries yet — new leads are pending review.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+    <h2 class="text-lg font-semibold text-blue-900 mb-4">Key Takeaways for Indian Companies</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="flex gap-3"><div class="text-blue-600 text-xl mt-0.5">1</div><div><div class="font-medium text-gray-900">DPDPA enforcement hasn't started yet — but it will</div><div class="text-sm text-gray-600 mt-1">The Data Protection Board of India is not yet fully operational. When it is, the ₹250 crore per violation penalty will be live. Start compliance now.</div></div></div>
+      <div class="flex gap-3"><div class="text-blue-600 text-xl mt-0.5">2</div><div><div class="font-medium text-gray-900">CERT-In's 6-hour rule is active and enforced now</div><div class="text-sm text-gray-600 mt-1">In force since June 2022. Failure to report within 6 hours carries penalty. Automate breach detection.</div></div></div>
+      <div class="flex gap-3"><div class="text-blue-600 text-xl mt-0.5">3</div><div><div class="font-medium text-gray-900">Data localisation is India's most effective enforcement tool</div><div class="text-sm text-gray-600 mt-1">RBI's business bans on Mastercard and Amex show India will use operational bans, not just fines.</div></div></div>
+      <div class="flex gap-3"><div class="text-blue-600 text-xl mt-0.5">4</div><div><div class="font-medium text-gray-900">Healthcare &amp; Fintech face dual regulatory pressure</div><div class="text-sm text-gray-600 mt-1">Obligations from multiple regulators simultaneously. A single platform covering all is essential.</div></div></div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-xl p-8 text-white text-center mb-10">
+    <h2 class="text-2xl font-bold mb-3">Don't wait for the Data Protection Board to come for you</h2>
+    <p class="text-blue-200 mb-6 max-w-2xl mx-auto">KensaraAI's AI agents continuously scan your infrastructure, automate DSAR handling, manage consent records, and auto-start breach notification clocks.</p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="https://www.kensara.in/book-demo" class="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors">Request a Demo</a>
+      <a href="https://www.kensara.in/dpdpa" class="border border-white text-white font-medium px-6 py-3 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">Read DPDPA Compliance Guide</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<script src="assets/tracker.js"></script>
+{% endblock %}

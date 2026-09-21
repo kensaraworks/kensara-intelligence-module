@@ -83,8 +83,8 @@ async def run_reverification() -> dict:
         store.update_case(case["id"], patch)
 
     if updated:
-        from src.publish.snapshot import write_snapshot
-        write_snapshot()
+        from src.publish.snapshot import publish_all
+        publish_all()
     store.log_run("reverify", "ok", detail=f"checked={checked} updated={updated}",
                   items_found=updated)
     result = {"status": "ok", "checked": checked, "updated": updated}

@@ -217,3 +217,33 @@ DROP POLICY IF EXISTS briefs_public_read ON public.intel_briefs;
 CREATE POLICY briefs_public_read ON public.intel_briefs
     FOR SELECT TO anon USING (true);
 -- Pipeline writes to briefs/angles/decisions use the service key (bypasses RLS).
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  Phase 0 — citable public surface
+-- ══════════════════════════════════════════════════════════════════════════
+-- slug: permanent per-case URL segment. NEVER regenerate an existing slug —
+--       a citation that 404s is worse than no citation.
+-- trust_tier: public provenance label (see docs/ARCHITECTURE_V2.md §2.4)
+--   primary_confirmed | press_reported | ai_detected
+ALTER TABLE public.enforcement_actions
+    ADD COLUMN IF NOT EXISTS slug TEXT,
+    ADD COLUMN IF NOT EXISTS trust_tier TEXT NOT NULL DEFAULT 'ai_detected';
+
+DO $$ BEGIN
+    ALTER TABLE public.enforcement_actions
+        ADD CONSTRAINT enf_trust_tier_chk
+        CHECK (trust_tier IN ('primary_confirmed', 'press_reported', 'ai_detected'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_enf_slug ON public.enforcement_actions(slug);
+
+-- Published rows must never be ai_detected; expose provenance to the public view.
+CREATE OR REPLACE VIEW public.enforcement_public AS
+    SELECT id, slug, section, date, authority, company, sector, violation_type,
+           dpdpa_section, summary, penalty_amount, penalty_amount_inr,
+           outcome, source_url, official_source_url, sources, trust_tier, updated_at
+    FROM public.enforcement_actions
+    WHERE needs_review = false
+    ORDER BY date DESC;
+
+GRANT SELECT ON public.enforcement_public TO anon, authenticated;

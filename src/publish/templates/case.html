@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}{{ e.company }} — {{ e.authority }} ({{ e.year }}) | DPDPA Enforcement Tracker{% endblock %}
+{% block description %}{{ e.company }}: {{ e.violation_type or e.section_label }} — {{ e.authority }}{% if e.penalty_display %}, {{ e.penalty_display }}{% endif %}. {{ e.outcome }}. Indian data-protection enforcement record.{% endblock %}
+{% block canonical %}{{ e.url_path }}{% endblock %}
+{% block ogtype %}article{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{{ jsonld | safe }}
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+  <nav aria-label="breadcrumb" class="text-sm text-gray-500 mb-6">
+    <ol class="flex items-center gap-2 flex-wrap">
+      <li><a href="{{ site.base_url }}/" class="hover:text-blue-700">Enforcement Tracker</a></li>
+      <li class="text-gray-300">/</li>
+      <li class="text-gray-600">{{ e.section_label }}</li>
+      <li class="text-gray-300">/</li>
+      <li class="text-gray-800 font-medium">{{ e.company }}</li>
+    </ol>
+  </nav>
+
+  <article>
+    <header class="mb-6">
+      <div class="flex items-center gap-2 flex-wrap mb-3">
+        <span class="text-xs font-medium px-2.5 py-1 rounded-full border {{ e.tier.css }}"
+              title="{{ e.tier.desc }}">{{ e.tier.icon }} {{ e.tier.label }}</span>
+        <span class="text-xs text-gray-500">{{ e.section_label }}</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        {{ e.company }} — {{ e.authority }}
+      </h1>
+      <p class="text-gray-500 text-sm">
+        {{ e.violation_type or 'Data-protection enforcement action' }}{% if e.date %} · {{ e.date }}{% endif %}
+      </p>
+    </header>
+
+    {# ── Fact block: liftable, machine-extractable answer up front ────── #}
+    <section aria-label="Key facts" class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-6">
+      <h2 class="sr-only">Key facts</h2>
+      <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Entity</dt><dd class="font-medium text-gray-900">{{ e.company }}</dd>
+        </div>
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Authority</dt><dd class="font-medium text-gray-900">{{ e.authority }}</dd>
+        </div>
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Date</dt><dd class="font-medium text-gray-900">{{ e.date or '—' }}</dd>
+        </div>
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Sector</dt><dd class="font-medium text-gray-900">{{ e.sector }}</dd>
+        </div>
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Legal provision</dt><dd class="font-medium text-gray-900">{{ e.statute_ref or '—' }}</dd>
+        </div>
+        <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
+          <dt class="text-gray-500">Penalty</dt><dd class="font-medium text-gray-900">{{ e.penalty_display or '—' }}</dd>
+        </div>
+        <div class="flex justify-between sm:block">
+          <dt class="text-gray-500">Outcome</dt>
+          <dd><span class="{{ outcome_badge(e.outcome) }} text-xs px-2 py-1 rounded-full font-medium">{{ e.outcome }}</span></dd>
+        </div>
+        <div class="flex justify-between sm:block">
+          <dt class="text-gray-500">Violation</dt><dd class="font-medium text-gray-900">{{ e.violation_type or '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    {% if e.summary %}
+    <section class="mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">What happened</h2>
+      <p class="text-gray-700 leading-relaxed">{{ e.summary }}</p>
+    </section>
+    {% endif %}
+
+    <section class="mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">Sources &amp; provenance</h2>
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-sm text-gray-600 mb-3">{{ e.tier.desc }}</p>
+        {% if e.sources %}
+        <ul class="space-y-2 text-sm">
+          {% for s in e.sources %}
+          <li class="flex items-start gap-2">
+            {% if s.is_primary %}<span class="text-emerald-600 mt-0.5" title="Official source">✓</span>
+            {% else %}<span class="text-gray-300 mt-0.5">•</span>{% endif %}
+            <a href="{{ s.url }}" target="_blank" rel="noopener" class="text-blue-600 hover:underline break-all">{{ s.display }}</a>
+            {% if s.is_primary %}<span class="text-xs text-emerald-700">official</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-sm text-gray-400">No public source link recorded.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {% if related %}
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Related enforcement actions</h2>
+      <ul class="grid sm:grid-cols-2 gap-3">
+        {% for r in related %}
+        <li class="bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300 transition-colors">
+          <a href="{{ site.base_url }}/{{ r.url_path }}" class="block">
+            <div class="font-medium text-gray-900 text-sm">{{ r.company }}</div>
+            <div class="text-xs text-gray-500 mt-0.5">{{ r.authority }}{% if r.date %} · {{ r.date }}{% endif %}</div>
+            {% if r.penalty_display %}<div class="text-xs text-gray-600 mt-1">{{ r.penalty_display }}</div>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <div class="flex flex-wrap gap-3 items-center justify-between border-t border-gray-200 pt-5">
+      <a href="{{ site.base_url }}/" class="text-blue-600 hover:underline text-sm">← All enforcement actions</a>
+      <span class="text-xs text-gray-400">Record ID: {{ e.id }}{% if e.updated_at %} · updated {{ e.updated_at }}{% endif %}</span>
+    </div>
+  </article>
+
+  <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-xl p-6 text-white text-center mt-8">
+    <h2 class="text-xl font-bold mb-2">Is your organisation ready for DPDPA enforcement?</h2>
+    <p class="text-blue-200 text-sm mb-4 max-w-xl mx-auto">KensaraAI automates DSAR handling, consent records and breach-notification clocks.</p>
+    <a href="https://www.kensara.in/book-demo" class="inline-block bg-white text-blue-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors">Request a Demo</a>
+  </div>
+</div>
+{% endblock %}

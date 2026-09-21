@@ -82,8 +82,8 @@ async def update_enforcement_tracker() -> dict:
 
     if not settings.has_search:
         store.log_run("enforcement", "error", detail="no search provider configured")
-        from src.publish.snapshot import write_snapshot
-        write_snapshot()
+        from src.publish.snapshot import publish_all
+        publish_all()
         return {"status": "skipped", "reason": "no_search_provider"}
 
     memory = ReviewMemory.load()  # #4
@@ -150,8 +150,8 @@ async def update_enforcement_tracker() -> dict:
                 published += 1
 
     store.prune_old_stories(settings.story_retention_days)  # GUARDRAIL
-    from src.publish.snapshot import write_snapshot
-    write_snapshot()
+    from src.publish.snapshot import publish_all
+    publish_all()
 
     store.log_run("enforcement", "ok",
                   detail=(f"scanned={len(items)} capped={len(capped)} merged={len(merged)} "
