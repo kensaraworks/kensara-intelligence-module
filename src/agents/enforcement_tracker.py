@@ -28,7 +28,7 @@ from src.ingestion.models import RawItem
 from src.processing import llm_extractor
 from src.processing.clustering import merge_candidate_rows
 from src.processing.feedback import ReviewMemory
-from src.processing.fulltext import fetch_article_text
+from src.processing.fulltext import fetch_article_text_smart
 from src.processing.scoring import calculate_relevance_score, classify_section, classify_sector
 from src.publish.model import TIER_PRIMARY
 from src.verification.verify import Verifier
@@ -120,7 +120,7 @@ async def update_enforcement_tracker(tier: int = 2) -> dict:
     discarded = fp_skipped = confirmed = 0
 
     for item, score in capped:
-        full_text = await fetch_article_text(item.url, fallback=item.summary)  # #1
+        full_text, _ft = await fetch_article_text_smart(item, fallback=item.summary)
         ex = await llm_extractor.extract_enforcement(
             item.title, item.summary, item.url, full_text=full_text, few_shot=few_shot)
         if ex is None:

@@ -12,7 +12,8 @@ Usage (locally or in GitHub Actions):
     python -m src.main render          # re-render the static site only
     python -m src.main graph           # rebuild the knowledge graph (idempotent)
     python -m src.main sense           # run the free sensing net (no paid APIs)
-    python -m src.main trace           # instrumented run -> /lab inspection UI
+    python -m src.main trace           # instrumented run -> /lab inspection UI (free)
+    python -m src.main trace --deep    # ...also trace extraction + verification
     python -m src.main all             # run everything (handy for first seed)
 """
 from __future__ import annotations
@@ -68,7 +69,8 @@ async def _dispatch(cmd: str) -> None:
         print(publish_all())
     elif cmd == "trace":
         from src.observability.trace import run_trace
-        print(await run_trace())
+        deep = "--deep" in sys.argv
+        print(await run_trace(deep=deep))
     elif cmd == "sense":
         from src.sensing.sweep import run_sweep
         res = await run_sweep(tier=2, include_watchlist=True)

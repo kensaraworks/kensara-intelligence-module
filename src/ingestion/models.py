@@ -14,6 +14,7 @@ class RawItem:
     url: str
     summary: str = ""
     published: str = ""  # ISO date string when known
+    publisher_url: str = ""  # publisher homepage (aggregator feeds)
 
     def text(self) -> str:
         return f"{self.title} {self.summary}".strip()

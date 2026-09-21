@@ -84,7 +84,101 @@ def _crawler_view() -> dict:
     return out
 
 
-async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
+async def _deep_trace(candidates, limit: int) -> list[dict]:
+    """Extraction + verification, recorded per candidate.
+
+    Opt-in because these are the only stages that cost anything: an LLM call per
+    candidate and a document fetch per verification. Nothing is written to the
+    database — this is a diagnostic, not a pipeline run.
+    """
+    from src.processing import llm_extractor
+    from src.processing.feedback import ReviewMemory
+    from src.processing.fulltext import fetch_article_text_smart
+    from src.verification.verify import Verifier
+
+    memory = ReviewMemory.load()
+    few_shot = memory.few_shot_block()
+    verifier = Verifier(archive=False)     # never archive from a diagnostic run
+    out: list[dict] = []
+
+    for item in candidates[:limit]:
+        rec: dict = {"title": item.title, "url": item.url, "source": item.source,
+                     "stages": []}
+
+        full_text, ft = await fetch_article_text_smart(item, fallback=item.summary)
+        rec["stages"].append({
+            "stage": "Full-text fetch",
+            # An aggregator link we could not resolve means the model only ever
+            # saw the RSS snippet — the silent quality killer this surfaced.
+            "ok": bool(full_text) and not (ft["aggregator"] and not ft["resolved_url"]),
+            "detail": f"{ft['chars']} chars — {ft['note']}",
+            "official_url": ft["resolved_url"],
+            "preview": (full_text or item.summary or "")[:400],
+        })
+
+        diag: dict = {}
+        ex = await llm_extractor.extract_enforcement(
+            item.title, item.summary, item.url, full_text=full_text,
+            few_shot=few_shot, diag=diag)
+        rec["extraction"] = diag
+        rec["stages"].append({
+            "stage": "LLM extraction",
+            "ok": ex is not None,
+            "detail": {
+                "extracted": f"genuine enforcement (via {diag.get('provider') or 'heuristic'})",
+                "rejected_not_enforcement":
+                    "model judged this NOT an enforcement action",
+                "heuristic_extracted": "no LLM key — heuristic kept it as a lead",
+                "heuristic_rejected": "no LLM key — heuristic found no action signal",
+                "no_provider": "no provider answered",
+            }.get(diag.get("outcome"), diag.get("outcome", "")),
+            "fields": diag.get("fields"),
+        })
+
+        if ex is None:
+            rec["outcome"] = "discarded_at_extraction"
+            out.append(rec)
+            continue
+
+        if memory.is_known_false_positive(ex.company, ex.authority):
+            rec["stages"].append({"stage": "False-positive memory", "ok": False,
+                                  "detail": "matches a signature a reviewer "
+                                            "previously discarded"})
+            rec["outcome"] = "skipped_known_false_positive"
+            out.append(rec)
+            continue
+
+        vr = await verifier.verify(
+            company=ex.company, authority=ex.authority, penalty=ex.penalty_amount,
+            date=item.published or "", source_urls=[item.url],
+            violation=ex.violation_type)
+        m = vr.match
+        rec["verification"] = vr.summary()
+        rec["stages"].append({
+            "stage": "Verification",
+            "ok": vr.trust_tier == "primary_confirmed",
+            "detail": (
+                f"official document opened and matched ({m.strength})"
+                if m and m.verified else
+                ("official source found but it does NOT substantiate the claim"
+                 if vr.official_url else "no official source located")),
+            "checks": {
+                "entity_matched": bool(m and m.entity_matched),
+                "amount_matched": bool(m and m.amount_matched),
+                "date_matched": bool(m and m.date_matched),
+            } if m else None,
+            "reasons": (m.reasons if m else vr.notes),
+            "official_url": vr.official_url,
+            "excerpt": (vr.evidence.excerpt if vr.evidence else ""),
+        })
+        rec["outcome"] = f"candidate_row:{vr.trust_tier}"
+        out.append(rec)
+
+    return out
+
+
+async def run_trace(tier: int = 2, include_watchlist: bool = True,
+                    deep: bool = False, deep_limit: int = 8) -> dict:
     """Run the sensing pipeline with full per-item instrumentation."""
     from src.config import settings
     from src.processing.dedup import Deduplicator
@@ -205,8 +299,15 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
          "note": f"cap = top {limit}; {len(deferred)} deferred to backlog, not lost"},
     ]
 
+    deep_records: list[dict] = []
+    if deep:
+        log.info("trace.deep_start", candidates=min(len(candidates), deep_limit))
+        deep_records = await _deep_trace(candidates, deep_limit)
+
     trace = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "deep": deep,
+        "deep_records": deep_records,
         "config": {
             "tier": tier, "watchlist": include_watchlist,
             "max_candidates_per_sweep": limit,
@@ -227,6 +328,7 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
     TRACE_PATH.parent.mkdir(parents=True, exist_ok=True)
     TRACE_PATH.write_text(json.dumps(trace, indent=2, ensure_ascii=False), encoding="utf-8")
     log.info("trace.written", path=str(TRACE_PATH), items=len(trace["items"]),
-             candidates=len(candidates))
+             candidates=len(candidates), deep=len(deep_records))
     return {"status": "ok", "path": str(TRACE_PATH), "items": len(records),
-            "candidates": len(candidates), "sources": len(sources)}
+            "candidates": len(candidates), "sources": len(sources),
+            "deep_records": len(deep_records)}

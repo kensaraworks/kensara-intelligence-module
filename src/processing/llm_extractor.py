@@ -166,13 +166,24 @@ _ORDER = ["groq", "gemini", "openai"]
 
 
 async def extract_enforcement(
-    title: str, snippet: str, url: str, *, full_text: str = "", few_shot: str = ""
+    title: str, snippet: str, url: str, *, full_text: str = "", few_shot: str = "",
+    diag: dict | None = None,
 ) -> ExtractedEnforcement | None:
     """Run extraction. Returns None for non-enforcement or on total failure.
 
     ``full_text`` (from fetch_article_text, #1) is preferred over the snippet;
     ``few_shot`` (from ReviewMemory, #4) conditions the model to the reviewer's bar.
+
+    ``diag`` (optional) is filled with why this returned what it did — which
+    provider answered, whether the JSON parsed, and the model's own
+    is_genuine_enforcement verdict. Returning None for "not enforcement" and
+    None for "everything failed" are very different outcomes, and the
+    inspection lab has to be able to tell them apart.
     """
+    if diag is not None:
+        diag.update(provider=None, parsed=False, is_genuine=None,
+                    heuristic_used=False, content_chars=len(full_text or snippet),
+                    used_full_text=bool(full_text), outcome="no_provider")
     provider = settings.resolved_llm_provider()
     content = full_text or snippet
     prompt = _prompt(title, content, url, few_shot)
@@ -187,12 +198,25 @@ async def extract_enforcement(
         raw = await _PROVIDERS[name](prompt)
         if raw:
             parsed = _parse(raw)
+            if diag is not None:
+                diag.update(provider=name, parsed=bool(parsed))
             if parsed:
+                if diag is not None:
+                    diag.update(is_genuine=parsed.is_genuine_enforcement,
+                                fields=parsed.model_dump(),
+                                outcome=("extracted" if parsed.is_genuine_enforcement
+                                         else "rejected_not_enforcement"))
                 log.info("llm.extracted", provider=name, company=parsed.company)
                 return parsed if parsed.is_genuine_enforcement else None
 
     # No LLM available/worked → heuristic fallback keeps a review lead alive.
-    return _heuristic(title, content)
+    fallback = _heuristic(title, content)
+    if diag is not None:
+        diag.update(heuristic_used=True, is_genuine=fallback is not None,
+                    fields=(fallback.model_dump() if fallback else None),
+                    outcome=("heuristic_extracted" if fallback
+                             else "heuristic_rejected"))
+    return fallback
 
 
 _SIGNAL_RE = re.compile(

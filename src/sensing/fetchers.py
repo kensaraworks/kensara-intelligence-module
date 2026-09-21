@@ -58,10 +58,13 @@ def _parse_feed(content: bytes, source: Source) -> list[RawItem]:
         summary = _clean(entry.get("summary") or entry.get("description") or "")[:1500]
         # Google News wraps the real publisher in the title: "Headline - Publisher"
         src_name = source.domain or source.name
+        publisher_url = ""
         if source.kind == "gnews" and getattr(entry, "source", None):
             src_name = entry.source.get("title", src_name)
+            publisher_url = entry.source.get("href", "")
         items.append(RawItem(source=src_name, title=title, url=link,
-                             summary=summary, published=published))
+                             summary=summary, published=published,
+                             publisher_url=publisher_url))
     return items
 
 

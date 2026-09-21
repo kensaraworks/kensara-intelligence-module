@@ -31,7 +31,7 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
       b.classList.remove("bg-blue-600"); b.classList.add("bg-slate-800");
     });
     btn.classList.add("bg-blue-600"); btn.classList.remove("bg-slate-800");
-    ["funnel", "items", "rejected", "sources", "crawler", "config"].forEach((t) =>
+    ["funnel", "items", "deep", "rejected", "sources", "crawler", "config"].forEach((t) =>
       $(`tab-${t}`).classList.toggle("hidden", t !== btn.dataset.tab));
   };
 });
@@ -205,6 +205,58 @@ function renderCrawler() {
       · llms.txt: <span class="${cv.llms_txt ? "text-emerald-400" : "text-red-400"}">${cv.llms_txt ? "present" : "missing"}</span></div>`;
 }
 
+// ── Deep: extraction + verification ───────────────────────────────────────
+const OUTCOME_STYLE = {
+  discarded_at_extraction: ["bg-slate-600/30 text-slate-300", "Discarded — not an enforcement action"],
+  skipped_known_false_positive: ["bg-amber-500/20 text-amber-300", "Skipped — known false positive"],
+  "candidate_row:primary_confirmed": ["bg-emerald-500/20 text-emerald-300", "Verified against official document"],
+  "candidate_row:press_reported": ["bg-blue-500/20 text-blue-300", "Press reported — not substantiated"],
+  "candidate_row:ai_detected": ["bg-slate-600/30 text-slate-300", "Awaiting review"],
+};
+
+function stageBlock(st) {
+  const icon = st.ok ? '<span class="text-emerald-400">✓</span>'
+                     : '<span class="text-amber-400">✕</span>';
+  const checks = st.checks ? `<div class="flex flex-wrap gap-2 mt-2">${
+    Object.entries(st.checks).map(([k, v]) =>
+      `<span class="text-xs px-2 py-0.5 rounded-full ${v ? "bg-emerald-500/15 text-emerald-300" : "bg-slate-700/40 text-slate-400"}">${esc(k.replace(/_/g, " "))}: ${v ? "yes" : "no"}</span>`).join("")}</div>` : "";
+  const reasons = st.reasons?.length ? `<div class="text-xs text-slate-500 mono mt-2">${st.reasons.map(esc).join(" · ")}</div>` : "";
+  const fields = st.fields ? `<details class="mt-2"><summary class="text-xs text-blue-400 cursor-pointer">Extracted fields</summary>
+      <pre class="mono text-xs text-slate-400 whitespace-pre-wrap mt-1 bg-black/30 p-2 rounded">${esc(JSON.stringify(st.fields, null, 2))}</pre></details>` : "";
+  const preview = st.preview ? `<details class="mt-2"><summary class="text-xs text-blue-400 cursor-pointer">Text the model was given</summary>
+      <pre class="mono text-xs text-slate-400 whitespace-pre-wrap mt-1 bg-black/30 p-2 rounded">${esc(st.preview)}…</pre></details>` : "";
+  const excerpt = st.excerpt ? `<blockquote class="text-xs text-emerald-300 italic border-l-2 border-emerald-700 pl-3 mt-2">“${esc(st.excerpt).slice(0, 320)}”</blockquote>` : "";
+  const link = st.official_url ? `<a href="${esc(st.official_url)}" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline break-all block mt-1">${esc(st.official_url).slice(0, 90)}</a>` : "";
+  return `<div class="border-l-2 ${st.ok ? "border-emerald-700" : "border-slate-700"} pl-3 py-1">
+    <div class="text-sm text-slate-200">${icon} ${esc(st.stage)}</div>
+    <div class="text-xs text-slate-400 mt-0.5">${esc(st.detail || "")}</div>
+    ${checks}${reasons}${link}${excerpt}${fields}${preview}</div>`;
+}
+
+function renderDeep() {
+  const root = $("deepRoot");
+  const recs = TRACE.deep_records || [];
+  if (!recs.length) {
+    root.innerHTML = `<div class="card rounded-xl p-6 text-slate-400 text-sm">
+      No deep trace in this run. Re-run with <code class="mono text-blue-300">--deep</code> to record
+      extraction and verification for each candidate.</div>`;
+    return;
+  }
+  root.innerHTML = recs.map((r) => {
+    const [style, label] = OUTCOME_STYLE[r.outcome] || ["bg-slate-600/30 text-slate-300", r.outcome];
+    return `<div class="card rounded-xl p-5">
+      <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
+        <div class="min-w-0">
+          <div class="text-sm text-slate-100">${esc(r.title)}</div>
+          <a href="${esc(r.url)}" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline break-all">${esc(r.source)}</a>
+        </div>
+        <span class="text-xs px-2 py-1 rounded-full whitespace-nowrap ${style}">${esc(label)}</span>
+      </div>
+      <div class="space-y-3">${(r.stages || []).map(stageBlock).join("")}</div>
+    </div>`;
+  }).join("");
+}
+
 // ── Config ────────────────────────────────────────────────────────────────
 function kv(obj) {
   return `<dl class="space-y-2">${Object.entries(obj).map(([k, v]) => `
@@ -264,7 +316,7 @@ function closeDrawer() { $("drawer").classList.add("hidden"); }
   const when = new Date(TRACE.generated_at);
   $("traceMeta").textContent =
     `trace ${when.toLocaleString()} · ${TRACE.items.length} items · ${TRACE.sources.length} sources`;
-  renderFunnel(); renderItems(); renderRejected(); renderSources(); renderCrawler(); renderConfig();
+  renderFunnel(); renderItems(); renderDeep(); renderRejected(); renderSources(); renderCrawler(); renderConfig();
   $("stageFilter").onchange = renderItems;
   $("itemSearch").oninput = renderItems;
 })();

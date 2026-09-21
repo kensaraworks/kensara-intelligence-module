@@ -41,6 +41,7 @@
     <div class="flex gap-2 mb-6 text-sm flex-wrap">
       <button data-tab="funnel" class="tab-btn px-4 py-2 rounded-lg bg-blue-600">Funnel</button>
       <button data-tab="items" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Every Item</button>
+      <button data-tab="deep" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Extraction &amp; Verification</button>
       <button data-tab="rejected" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">What Was Redacted</button>
       <button data-tab="sources" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Sources</button>
       <button data-tab="crawler" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Crawler View</button>
@@ -78,6 +79,20 @@
         <div id="itemsTable" class="overflow-x-auto text-sm"></div>
         <div class="text-xs text-slate-500 mt-3" id="itemsCount"></div>
       </div>
+    </section>
+
+    <!-- DEEP: extraction + verification -->
+    <section id="tab-deep" class="hidden">
+      <div class="card rounded-xl p-5 mb-5">
+        <h2 class="font-semibold mb-1">Extraction &amp; verification, per candidate</h2>
+        <p class="text-slate-400 text-xs">
+          The stages that cost money, so they are opt-in. Shows what text was fetched,
+          what the model concluded and — crucially — whether the official document
+          actually substantiated the claim.
+        </p>
+        <code class="mono block bg-[#0b1220] border border-slate-800 rounded-lg p-2 text-blue-300 text-xs mt-3">python -m src.main trace --deep</code>
+      </div>
+      <div id="deepRoot" class="space-y-4"></div>
     </section>
 
     <!-- REDACTED -->
