@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-09-21T01:34:37.700327+00:00",
+  "count": 14,
+  "entities": [
+    {
+      "slug": "american-express",
+      "name": "American Express",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/american-express",
+      "aliases": [
+        "American Express & Diners Club"
+      ],
+      "case_count": 1
+    },
+    {
+      "slug": "cert-in",
+      "name": "CERT-In",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/cert-in",
+      "aliases": [],
+      "case_count": 2
+    },
+    {
+      "slug": "competition-commission-india",
+      "name": "Competition Commission of India",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/competition-commission-india",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "high-court",
+      "name": "High Court",
+      "type": "court",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/high-court",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "insurance-regulatory-development-authority-india",
+      "name": "Insurance Regulatory and Development Authority of India",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/insurance-regulatory-development-authority-india",
+      "aliases": [
+        "IRDAI"
+      ],
+      "case_count": 1
+    },
+    {
+      "slug": "irish-data-protection-commission",
+      "name": "Irish Data Protection Commission",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/irish-data-protection-commission",
+      "aliases": [],
+      "case_count": 2
+    },
+    {
+      "slug": "linkedin",
+      "name": "LinkedIn",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/linkedin",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "manappuram-finance-ola-financial-services",
+      "name": "Manappuram Finance Limited; Ola Financial Services Pvt. Ltd.; Visa Worldwide Pte. Limited",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/manappuram-finance-ola-financial-services",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "mastercard",
+      "name": "Mastercard",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/mastercard",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "meta-platforms",
+      "name": "Meta Platforms",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/meta-platforms",
+      "aliases": [
+        "WhatsApp / Meta"
+      ],
+      "case_count": 2
+    },
+    {
+      "slug": "ministry-electronics-information-technology",
+      "name": "Ministry of Electronics and Information Technology",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/ministry-electronics-information-technology",
+      "aliases": [
+        "MeitY"
+      ],
+      "case_count": 2
+    },
+    {
+      "slug": "reserve-bank-india",
+      "name": "Reserve Bank of India",
+      "type": "regulator",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/reserve-bank-india",
+      "aliases": [],
+      "case_count": 3
+    },
+    {
+      "slug": "star-health-allied-insurance",
+      "name": "Star Health and Allied Insurance",
+      "type": "company",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/star-health-allied-insurance",
+      "aliases": [],
+      "case_count": 1
+    },
+    {
+      "slug": "supreme-court-india",
+      "name": "Supreme Court of India",
+      "type": "court",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/entity/supreme-court-india",
+      "aliases": [
+        "Supreme Court"
+      ],
+      "case_count": 1
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}India Data Protection Penalties — Totals by Sector &amp; Regulator | KensaraAI{% endblock %}
+{% block description %}Aggregate analysis of Indian data-protection enforcement: {{ total_display }} in tracked penalties across {{ stats.total }} actions, broken down by regulator, sector and year.{% endblock %}
+{% block canonical %}penalties{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{{ jsonld | safe }}
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="section-header text-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-bold mb-3">India Data-Protection Penalties</h1>
+    <p class="text-blue-100 max-w-3xl">Aggregate view of every enforcement action in the tracker — totals by regulator, sector and year.</p>
+    <div class="mt-5 inline-block bg-white bg-opacity-10 rounded-lg px-5 py-3">
+      <div class="text-3xl font-bold">{{ total_display or '—' }}</div>
+      <div class="text-blue-200 text-sm">Total tracked penalties across {{ stats.total }} actions</div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <section class="mb-10">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Largest penalties</h2>
+    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200"><tr>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Entity</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Authority</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase w-40">Penalty</th>
+        </tr></thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for c in largest %}
+          <tr class="table-row-hover">
+            <td class="px-4 py-3"><a href="{{ site.base_url }}/{{ c.url_path }}" class="text-blue-700 hover:underline font-medium">{{ c.company }}</a></td>
+            <td class="px-4 py-3 text-gray-700">{{ c.authority }}</td>
+            <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ c.date }}</td>
+            <td class="px-4 py-3 font-semibold text-gray-900">{{ c.penalty_display }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid md:grid-cols-2 gap-6 mb-10">
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">By regulator</h2>
+      <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+        {% for name, count, amount, pct in by_authority %}
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-gray-800 font-medium">{{ name }}</span>
+            <span class="text-gray-500">{{ count }} · {{ amount or '—' }}</span>
+          </div>
+          <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-blue-600 rounded-full" style="width: {{ pct }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">By sector</h2>
+      <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+        {% for name, count, amount, pct in by_sector %}
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-gray-800 font-medium">{{ name }}</span>
+            <span class="text-gray-500">{{ count }} · {{ amount or '—' }}</span>
+          </div>
+          <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-emerald-600 rounded-full" style="width: {{ pct }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <section class="mb-10">
+    <h2 class="text-lg font-semibold text-gray-900 mb-3">Actions by year</h2>
+    <div class="bg-white rounded-xl border border-gray-200 p-5">
+      <div class="flex items-end gap-3 h-40">
+        {% for year, count, height in by_year %}
+        <div class="flex-1 flex flex-col items-center justify-end h-full">
+          <div class="text-xs text-gray-500 mb-1">{{ count }}</div>
+          <div class="w-full bg-blue-600 rounded-t" style="height: {{ height }}%"></div>
+          <div class="text-xs text-gray-600 mt-2">{{ year }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="text-xs text-gray-400 mt-4">Number of tracked enforcement actions per year.</p>
+    </div>
+  </section>
+
+  <p class="text-xs text-gray-400">
+    Totals cover actions recorded in this tracker, including international penalties shown in their original currency on the case pages.
+    Every figure links to a sourced case page. Data:
+    <a href="{{ site.base_url }}/data/enforcement.csv" class="text-blue-600 hover:underline">CSV</a> ·
+    <a href="{{ site.base_url }}/api/v1/stats.json" class="text-blue-600 hover:underline">JSON API</a>
+  </p>
+</div>
+{% endblock %}

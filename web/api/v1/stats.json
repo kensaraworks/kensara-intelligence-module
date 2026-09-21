@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-09-21T01:34:37.700327+00:00",
+  "total_cases": 11,
+  "primary_confirmed": 0,
+  "total_penalty_inr": 18221400000.0,
+  "by_section": {
+    "dpdpa_board": 2,
+    "sectoral_regulators": 4,
+    "cert_in_breach": 2,
+    "courts_case_law": 1,
+    "international_benchmarks": 2
+  },
+  "by_authority": {
+    "Irish Data Protection Commission": 2,
+    "MeitY": 2,
+    "Competition Commission of India": 1,
+    "Reserve Bank of India": 3,
+    "CERT-In / IRDAI": 1,
+    "CERT-In": 1,
+    "High Court / Supreme Court": 1
+  },
+  "by_sector": {
+    "Social Media / Tech": 3,
+    "Government": 4,
+    "Fintech": 3,
+    "Healthcare": 1
+  }
+}

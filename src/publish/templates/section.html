@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}DPDPA {{ s.label }} — {{ s.title }} | Explained + Enforcement Cases{% endblock %}
+{% block description %}DPDPA 2023 {{ s.label }}: {{ s.title }}. Plain-English explanation, compliance obligations{% if cases %}, and {{ cases|length }} tracked enforcement {{ 'case' if cases|length == 1 else 'cases' }}{% endif %}.{% endblock %}
+{% block canonical %}{{ s.url_path }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{{ jsonld | safe }}
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+  <nav aria-label="breadcrumb" class="text-sm text-gray-500 mb-6">
+    <ol class="flex items-center gap-2 flex-wrap">
+      <li><a href="{{ site.base_url }}/" class="hover:text-blue-700">Enforcement Tracker</a></li>
+      <li class="text-gray-300">/</li>
+      <li><a href="{{ site.base_url }}/dpdpa" class="hover:text-blue-700">DPDPA 2023</a></li>
+      <li class="text-gray-300">/</li>
+      <li class="text-gray-800 font-medium">{{ s.label }}</li>
+    </ol>
+  </nav>
+
+  <article>
+    <header class="mb-6">
+      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">
+        Chapter {{ s.chapter }}
+      </span>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-3 mb-2">
+        DPDPA {{ s.label }} — {{ s.title }}
+      </h1>
+      <p class="text-sm text-gray-500">Applies to: <strong class="text-gray-700">{{ s.applies_to }}</strong></p>
+    </header>
+
+    <section class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-6">
+      <h2 class="text-base font-semibold text-gray-900 mb-2">What this section does</h2>
+      <p class="text-gray-700 leading-relaxed">{{ s.summary }}</p>
+      <p class="text-xs text-gray-400 mt-3">
+        Plain-English summary prepared by KensaraAI — not the statutory text.
+        <a href="{{ official_url }}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">Read the official Act ↗</a>
+      </p>
+    </section>
+
+    {% if s.obligations %}
+    <section class="mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">What you have to do</h2>
+      <ul class="space-y-2">
+        {% for o in s.obligations %}
+        <li class="flex gap-3 bg-white rounded-lg border border-gray-200 p-3">
+          <span class="text-blue-600 mt-0.5">▸</span>
+          <span class="text-sm text-gray-700">{{ o }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <section class="mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">
+        Enforcement under this section
+        <span class="text-sm font-normal text-gray-400">({{ cases|length }})</span>
+      </h2>
+      {% if cases %}
+      <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200"><tr>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Entity</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Authority</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Penalty</th>
+          </tr></thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for c in cases %}
+            <tr class="table-row-hover">
+              <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ c.date }}</td>
+              <td class="px-4 py-3"><a href="{{ site.base_url }}/{{ c.url_path }}" class="text-blue-700 hover:underline font-medium">{{ c.company }}</a></td>
+              <td class="px-4 py-3 text-gray-700">{{ c.authority }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ c.penalty_display or '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600">
+        No enforcement action citing this section has been recorded yet. The Data Protection
+        Board is not yet issuing penalties under the DPDPA — this page will populate as
+        enforcement begins.
+      </div>
+      {% endif %}
+    </section>
+
+    {% if related %}
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Related sections</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        {% for r in related %}
+        <a href="{{ site.base_url }}/{{ r.url_path }}" class="block bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300">
+          <div class="font-medium text-gray-900 text-sm">{{ r.label }} — {{ r.title }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="border-t border-gray-200 pt-5">
+      <a href="{{ site.base_url }}/dpdpa" class="text-blue-600 hover:underline text-sm">← All DPDPA sections</a>
+    </div>
+  </article>
+
+  <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-xl p-6 text-white text-center mt-8">
+    <h2 class="text-xl font-bold mb-2">Automate compliance with {{ s.label }}</h2>
+    <p class="text-blue-200 text-sm mb-4 max-w-xl mx-auto">KensaraAI maps your processing to each DPDPA obligation and keeps the evidence trail regulators ask for.</p>
+    <a href="https://www.kensara.in/book-demo" class="inline-block bg-white text-blue-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-50">Request a Demo</a>
+  </div>
+</div>
+{% endblock %}

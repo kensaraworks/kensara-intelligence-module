@@ -207,7 +207,8 @@ def write_csv(events: list[RenderEvent], path: Path) -> None:
                         " | ".join(s.url for s in e.sources)])
 
 
-def write_sitemap(events: list[RenderEvent], path: Path, entities: list | None = None) -> None:
+def write_sitemap(events: list[RenderEvent], path: Path, entities: list | None = None,
+                  extra_paths: list[str] | None = None) -> None:
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = [f"  <url><loc>{BASE_URL}/</loc><lastmod>{today}</lastmod>"
             f"<changefreq>daily</changefreq><priority>1.0</priority></url>"]
@@ -219,6 +220,10 @@ def write_sitemap(events: list[RenderEvent], path: Path, entities: list | None =
     for ent in entities or []:
         urls.append(
             f"  <url><loc>{BASE_URL}/{ent.url_path}</loc><lastmod>{today}</lastmod>"
+            f"<changefreq>weekly</changefreq><priority>0.7</priority></url>")
+    for path_ in extra_paths or []:
+        urls.append(
+            f"  <url><loc>{BASE_URL}/{path_}</loc><lastmod>{today}</lastmod>"
             f"<changefreq>weekly</changefreq><priority>0.7</priority></url>")
     path.write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -445,16 +450,30 @@ def render_site() -> dict:
     # Entity pages (Phase 1 graph → long-tail surface)
     entity_pages = render_entity_pages(graph, env, site)
 
+    # Phase 4 surfaces — all generated from the same knowledge base, so every
+    # new verified case strengthens several pages at once.
+    from src.publish import surfaces
+
+    statute_pages = surfaces.render_statute_pages(events, env, site, BASE_URL, WEB)
+    surfaces.render_penalties_page(events, env, site, BASE_URL, WEB, stats)
+    surfaces.render_calendar_page(events, env, site, WEB)
+    api_files = surfaces.write_api(events, graph, BASE_URL, WEB, stats)
+
     # Machine surfaces
     write_csv(events, WEB / "data" / "enforcement.csv")
-    write_sitemap(events, WEB / "sitemap.xml", entities=graph.pageable)
+    write_sitemap(events, WEB / "sitemap.xml", entities=graph.pageable,
+                  extra_paths=["dpdpa", "penalties", "calendar"]
+                              + [s_.url_path for s_ in __import__(
+                                  'src.publish.statute', fromlist=['SECTIONS']).SECTIONS])
     write_robots(WEB / "robots.txt")
     write_llms_txt(events, stats, WEB / "llms.txt")
 
     persist(graph)  # best-effort; never required
 
     result = {"status": "ok", "events": len(events), "entities": len(graph.entities),
-              "entity_pages": entity_pages, "pages": len(events) + entity_pages + 1,
+              "entity_pages": entity_pages, "statute_pages": statute_pages,
+              "api_files": len(api_files),
+              "pages": len(events) + entity_pages + statute_pages + 3,
               "contradictions": sum(len(g.contradictions) for g in graph.events),
               "primary_confirmed": stats["primary_confirmed"]}
     log.info("render.done", **result)

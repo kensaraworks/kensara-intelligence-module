@@ -274,3 +274,42 @@ def test_evidence_hash_is_stable():
     assert content_hash("abc") == content_hash("abc")
     assert content_hash("abc") != content_hash("abd")
     assert len(content_hash("abc")) == 64
+
+
+# ── Phase 4: public surfaces ──────────────────────────────────────────────
+def test_statute_does_not_misattribute_other_acts():
+    """'IT Act Section 43A' must not map to DPDPA Section 43."""
+    from src.publish.statute import sections_cited_in
+    assert [s.label for s in sections_cited_in("DPDPA Section 8(6)")] == ["Section 8"]
+    assert sections_cited_in("IT Act Section 43A") == []
+    assert sections_cited_in("GDPR Art. 46") == []
+    assert sections_cited_in("Competition Act §4") == []
+
+
+def test_statute_slugs_are_stable_and_unique():
+    from src.publish.statute import SECTIONS
+    slugs = [s.slug for s in SECTIONS]
+    assert len(slugs) == len(set(slugs))
+    assert all(s.url_path.startswith("dpdpa/") for s in SECTIONS)
+
+
+def test_calendar_only_publishes_sourced_milestones():
+    """A wrong compliance deadline is worse than no deadline."""
+    from src.publish.calendar_data import MILESTONES
+    assert MILESTONES, "expected at least one curated milestone"
+    for m in MILESTONES:
+        assert m.source_url, f"milestone '{m.title}' has no source URL"
+        assert len(m.date) == 10 and m.date[4] == "-"
+
+
+def test_calendar_dedupes_curated_against_events():
+    from src.publish.calendar_data import MILESTONES, build_calendar
+
+    class _E:
+        date = MILESTONES[0].date
+        company, authority, summary = "X", "Y", "z"
+        primary_source = None
+
+    cal = build_calendar([_E()])
+    on_that_date = [m for m in cal["past"] if m.date == MILESTONES[0].date]
+    assert len(on_that_date) == 1, "curated milestone must win over the derived event"

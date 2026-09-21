@@ -1,0 +1,217 @@
+{
+  "generated_at": "2026-09-21T01:34:37.700327+00:00",
+  "count": 11,
+  "license": "CC BY 4.0",
+  "attribution": "KensaraAI — https://kensara.in",
+  "cases": [
+    {
+      "id": "IND-DPDPA-002",
+      "slug": "draft-dpdp-rules-meity-202501",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/draft-dpdp-rules-meity-202501",
+      "date": "2025-01-03",
+      "company": "Draft DPDP Rules",
+      "authority": "MeitY",
+      "sector": "Government",
+      "section": "dpdpa_board",
+      "violation_type": "Subordinate legislation",
+      "legal_provision": "DPDP Rules (Draft)",
+      "penalty": "N/A (Rules)",
+      "penalty_inr": 0.0,
+      "outcome": "Consultation",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.meity.gov.in/"
+      ]
+    },
+    {
+      "id": "IND-CCI-001",
+      "slug": "whatsapp-meta-cci-202411",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/whatsapp-meta-cci-202411",
+      "date": "2024-11-18",
+      "company": "WhatsApp / Meta",
+      "authority": "Competition Commission of India",
+      "sector": "Social Media / Tech",
+      "section": "sectoral_regulators",
+      "violation_type": "Data-sharing / abuse of dominance",
+      "legal_provision": "Competition Act §4",
+      "penalty": "₹213.14 Cr",
+      "penalty_inr": 2131400000.0,
+      "outcome": "Fine Imposed",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.cci.gov.in/"
+      ]
+    },
+    {
+      "id": "INTL-EU-002",
+      "slug": "linkedin-dpc-202410",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/linkedin-dpc-202410",
+      "date": "2024-10-24",
+      "company": "LinkedIn",
+      "authority": "Irish Data Protection Commission",
+      "sector": "Social Media / Tech",
+      "section": "international_benchmarks",
+      "violation_type": "Behavioural-advertising consent",
+      "legal_provision": "GDPR Art. 6",
+      "penalty": "€310 Million",
+      "penalty_inr": 2790000000.0,
+      "outcome": "Fine Imposed",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.dataprotection.ie/#linkedin-2024"
+      ]
+    },
+    {
+      "id": "IND-CERT-002",
+      "slug": "star-health-allied-insurance-cert-in-202409",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/star-health-allied-insurance-cert-in-202409",
+      "date": "2024-09-20",
+      "company": "Star Health & Allied Insurance",
+      "authority": "CERT-In / IRDAI",
+      "sector": "Healthcare",
+      "section": "cert_in_breach",
+      "violation_type": "Sensitive health-data breach",
+      "legal_provision": "IT Act §43A / §70B",
+      "penalty": "Investigation",
+      "penalty_inr": 0.0,
+      "outcome": "Investigation Ongoing",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.cert-in.org.in/#star-health-2024"
+      ]
+    },
+    {
+      "id": "AUTO-2026-773AF5",
+      "slug": "manappuram-finance-ola-financial-rbi-202408",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/manappuram-finance-ola-financial-rbi-202408",
+      "date": "2024-08-01",
+      "company": "Manappuram Finance Limited; Ola Financial Services Pvt. Ltd.; Visa Worldwide Pte. Limited",
+      "authority": "Reserve Bank of India",
+      "sector": "Fintech",
+      "section": "sectoral_regulators",
+      "violation_type": "Non‑compliance with KYC and regulatory guidelines",
+      "legal_provision": "N/A",
+      "penalty": "₹41.5 Lakh, ₹87.55 Lakh, ₹24.074 Lakh",
+      "penalty_inr": 0.0,
+      "outcome": "Fine Imposed",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.zigram.tech/article/rbi-fines-payment-system-operators/"
+      ]
+    },
+    {
+      "id": "IND-DPDPA-001",
+      "slug": "statute-all-data-fiduciaries-meity-202308",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/statute-all-data-fiduciaries-meity-202308",
+      "date": "2023-08-11",
+      "company": "Statute — All Data Fiduciaries",
+      "authority": "MeitY",
+      "sector": "Government",
+      "section": "dpdpa_board",
+      "violation_type": "Legislation enacted",
+      "legal_provision": "DPDP Act 2023",
+      "penalty": "Up to ₹250 Cr (framework)",
+      "penalty_inr": 2500000000.0,
+      "outcome": "Enacted",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.meity.gov.in/data-protection-framework"
+      ]
+    },
+    {
+      "id": "INTL-EU-001",
+      "slug": "meta-platforms-dpc-202305",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/meta-platforms-dpc-202305",
+      "date": "2023-05-22",
+      "company": "Meta Platforms",
+      "authority": "Irish Data Protection Commission",
+      "sector": "Social Media / Tech",
+      "section": "international_benchmarks",
+      "violation_type": "Unlawful EU–US data transfer",
+      "legal_provision": "GDPR Art. 46",
+      "penalty": "€1.2 Billion",
+      "penalty_inr": 10800000000.0,
+      "outcome": "Fine Imposed",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.dataprotection.ie/#meta-2023"
+      ]
+    },
+    {
+      "id": "IND-CERT-001",
+      "slug": "all-body-corporates-intermediaries-cert-in-202204",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/all-body-corporates-intermediaries-cert-in-202204",
+      "date": "2022-04-28",
+      "company": "All body corporates & intermediaries",
+      "authority": "CERT-In",
+      "sector": "Government",
+      "section": "cert_in_breach",
+      "violation_type": "6-hour breach reporting mandate",
+      "legal_provision": "IT Act §70B(6) — CERT-In 2022 Directions",
+      "penalty": "Penalty / imprisonment (framework)",
+      "penalty_inr": 0.0,
+      "outcome": "Enacted",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.cert-in.org.in/#directions-2022"
+      ]
+    },
+    {
+      "id": "IND-RBI-001",
+      "slug": "mastercard-rbi-202107",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/mastercard-rbi-202107",
+      "date": "2021-07-14",
+      "company": "Mastercard",
+      "authority": "Reserve Bank of India",
+      "sector": "Fintech",
+      "section": "sectoral_regulators",
+      "violation_type": "Data localisation non-compliance",
+      "legal_provision": "RBI Storage of Payment System Data (2018)",
+      "penalty": "Business restriction",
+      "penalty_inr": 0.0,
+      "outcome": "Business Ban / Restriction",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.rbi.org.in/#mastercard-2021"
+      ]
+    },
+    {
+      "id": "IND-RBI-002",
+      "slug": "american-express-diners-club-rbi-202104",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/american-express-diners-club-rbi-202104",
+      "date": "2021-04-23",
+      "company": "American Express & Diners Club",
+      "authority": "Reserve Bank of India",
+      "sector": "Fintech",
+      "section": "sectoral_regulators",
+      "violation_type": "Data localisation non-compliance",
+      "legal_provision": "RBI Storage of Payment System Data (2018)",
+      "penalty": "Business restriction",
+      "penalty_inr": 0.0,
+      "outcome": "Business Ban / Restriction",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://www.rbi.org.in/#amex-2021"
+      ]
+    },
+    {
+      "id": "IND-SC-001",
+      "slug": "k-s-puttaswamy-v-court-201708",
+      "url": "https://kensara-intelligence-module-alpha.vercel.app/enforcement/k-s-puttaswamy-v-court-201708",
+      "date": "2017-08-24",
+      "company": "K.S. Puttaswamy v Union of India",
+      "authority": "High Court / Supreme Court",
+      "sector": "Government",
+      "section": "courts_case_law",
+      "violation_type": "Right to privacy",
+      "legal_provision": "Constitution Art. 21",
+      "penalty": "Landmark judgment",
+      "penalty_inr": 0.0,
+      "outcome": "Adjudication Order Issued",
+      "trust_tier": "press_reported",
+      "sources": [
+        "https://main.sci.gov.in/"
+      ]
+    }
+  ]
+}
