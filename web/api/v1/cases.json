@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T01:34:37.700327+00:00",
+  "generated_at": "2026-09-21T03:47:12.500279+00:00",
   "count": 11,
   "license": "CC BY 4.0",
   "attribution": "KensaraAI — https://kensara.in",
@@ -94,8 +94,9 @@
       "penalty": "₹41.5 Lakh, ₹87.55 Lakh, ₹24.074 Lakh",
       "penalty_inr": 0.0,
       "outcome": "Fine Imposed",
-      "trust_tier": "press_reported",
+      "trust_tier": "primary_confirmed",
       "sources": [
+        "https://rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58382",
         "https://www.zigram.tech/article/rbi-fines-payment-system-operators/"
       ]
     },
