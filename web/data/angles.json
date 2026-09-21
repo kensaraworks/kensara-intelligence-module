@@ -1,4 +1,45 @@
 {
-  "generated_at": "2026-09-20T07:20:48.740236+00:00",
-  "angles": []
+  "generated_at": "2026-09-21T05:09:41.999847+00:00",
+  "angles": [
+    {
+      "story_url": "https://www.cookieyes.com/blog/india-digital-personal-data-protection-act-dpdpa/",
+      "headline": "India Digital Personal Data Protection Act (DPDPA 2025) - CookieYes",
+      "angle": "How to Automate Consent Management for DPDPA 2025 Compliance with KensaraAI",
+      "target_keyword": "DPDPA consent management solution",
+      "rationale": "Captures high-intent searches from Indian businesses seeking a ready-to-use consent platform to meet the new DPDPA requirements, positioning KensaraAI as the go‑to SaaS solution.",
+      "score": 15
+    },
+    {
+      "story_url": "https://www.dpdpa.com/dpdpa-module-4.html",
+      "headline": "Module 4: Enforcement & Penalties | DPDPA Certificate Course",
+      "angle": "Avoiding DPDPA Penalties: Why Robust Consent Management Is Your Best Defense",
+      "target_keyword": "DPDPA consent management penalties",
+      "rationale": "Captures high‑intent searches from firms worried about enforcement fines and positions KensaraAI’s consent platform as the essential solution for DPDPA compliance.",
+      "score": 14
+    },
+    {
+      "story_url": "https://entrackr.com/snippets/avaana-capital-leads-rs-43-cr-pre-series-a-round-in-deeptech-company-dheyatech-12544665",
+      "headline": "Avaana Capital leads Rs 43 Cr pre-Series A round in deeptech company DheyaTech",
+      "angle": "Why DeepTech Startups Like DheyaTech Must Prioritize DPDPA Consent Management to Secure Funding and Scale",
+      "target_keyword": "DPDPA consent management for deeptech startups",
+      "rationale": "Founders and investors searching for compliance steps after funding announcements will look for consent solutions, driving high‑intent traffic to KensaraAI’s platform.",
+      "score": 14
+    },
+    {
+      "story_url": "https://yourstory.com/2026/09/semicon-india-2026-vikram-misri-chip-self-reliance-partnerships",
+      "headline": "No nation builds a chip alone: Vikram Misri's case for partnership at SEMICON India 2026",
+      "angle": "Why Semiconductor Partnerships Must Prioritize DPDPA‑Compliant Consent Management",
+      "target_keyword": "DPDPA consent for semiconductor partnerships",
+      "rationale": "Captures emerging search interest from chip makers seeking compliant data‑sharing frameworks, positioning KensaraAI as the go‑to solution for consent management in collaborative chip projects.",
+      "score": 13
+    },
+    {
+      "story_url": "https://yourstory.com/2026/09/who-will-build-indias-next-100-chip-companies",
+      "headline": "Who will build India’s next 100 chip companies? Giving robots a sense of direction",
+      "angle": "Why India's Next 100 Chip Companies Must Build Data‑Consent Frameworks into Their Robotics Platforms",
+      "target_keyword": "data consent for AI chip companies India",
+      "rationale": "Captures high‑intent searches from emerging chip and robotics startups seeking DPDPA‑compliant consent solutions, positioning KensaraAI as the go‑to compliance platform.",
+      "score": 13
+    }
+  ]
 }

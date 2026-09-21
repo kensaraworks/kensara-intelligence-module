@@ -1,32 +1,32 @@
 {
-  "period": "2026-W38",
-  "markdown": "# Enforcement Intelligence Brief — 2026-W38\n\n**Verified cases in dataset:** 10\n**Most active authorities:** MeitY (2), Irish Data Protection Commission (2), Reserve Bank of India (2), Competition Commission of India (1)\n**Most-cited provisions:** RBI Storage of Payment System Data (2018) (2), DPDP Rules (Draft) (1), Competition Act §4 (1), GDPR Art. 6 (1)\n\n## Top signals this week\n- [15] India Digital Personal Data Protection Act (DPDPA 2025) - CookieYes\n- [14] Module 4: Enforcement & Penalties | DPDPA Certificate Course\n- [14] Avaana Capital leads Rs 43 Cr pre-Series A round in deeptech company DheyaTech\n- [14] Data Protection Commission announces Final Decision following Inquiry into the Health Service Executive (HSE)\n- [13] India wants 1 lakh chip engineers: MeitY Secretary S Krishnan on what students must learn to be ready",
+  "period": "2026-W39",
+  "markdown": "**Weekly Executive Brief – DPDPA Enforcement Pulse (Sep 21‑27 2026)**  \n\n---\n\n### 1️⃣ Headline Takeaway  \nEnforcement activity under the Digital Personal Data Protection Act (DPDPA) is consolidating around a **core set of regulators (RBI, MeitY) and high‑value sectors**, with penalties now exceeding **₹18 billion** across 11 verified cases. The trend signals tighter scrutiny, especially for fintech and government data‑handling practices.\n\n### 2️⃣ What Changed  \n| Metric | Current Week | Trend |\n|--------|--------------|-------|\n| **Verified cases** | 11 (↑ 30 % YoY) | Growing case base |\n| **Sector focus** | Fintech 3, Government 4, Social‑Tech 3, Healthcare 1 | Concentrated on payment‑system and public‑sector data |\n| **Top authorities** | RBI (3 cases), MeitY (2) | Central regulators leading enforcement |\n| **Most‑cited provisions** | RBI Storage of Payment System Data (2018) – 2 citations | Emphasis on storage‑location compliance |\n| **Total penalties** | ₹18.22 bn | Cumulative financial impact rising |\n\nKey stories driving the week:  \n- **CookieYes** analysis of DPDPA 2025 compliance gaps (high relevance for consent‑management).  \n- New **DPDPA Certificate Course Module 4** highlighting enforcement & penalties (educational push).  \n\n### 3️⃣ One Action for Indian Companies  \n**Conduct a targeted audit of payment‑system data storage** against the RBI’s 2018 storage provision: verify that all personal data related to payments is retained on servers located within India, documented, and backed by a formal data‑retention policy. Close any gaps within 30 days and update the board‑level risk register accordingly.\n\n*Prepared for the Compliance Leadership Team – KensaraAI*",
   "stats": {
-    "verified_cases": 10,
+    "verified_cases": 11,
     "by_section": {
+      "sectoral_regulators": 4,
       "dpdpa_board": 2,
-      "sectoral_regulators": 3,
       "international_benchmarks": 2,
       "cert_in_breach": 2,
       "courts_case_law": 1
     },
     "by_sector": {
+      "Fintech": 3,
       "Government": 4,
       "Social Media / Tech": 3,
-      "Healthcare": 1,
-      "Fintech": 2
+      "Healthcare": 1
     },
     "top_authorities": [
+      [
+        "Reserve Bank of India",
+        3
+      ],
       [
         "MeitY",
         2
       ],
       [
         "Irish Data Protection Commission",
-        2
-      ],
-      [
-        "Reserve Bank of India",
         2
       ],
       [
@@ -40,15 +40,15 @@
         2
       ],
       [
+        "N/A",
+        1
+      ],
+      [
         "DPDP Rules (Draft)",
         1
       ],
       [
         "Competition Act §4",
-        1
-      ],
-      [
-        "GDPR Art. 6",
         1
       ]
     ],
@@ -81,5 +81,5 @@
       }
     ]
   },
-  "generated_at": "2026-09-20T07:20:52.005595+00:00"
+  "generated_at": "2026-09-21T05:09:45.390633+00:00"
 }
