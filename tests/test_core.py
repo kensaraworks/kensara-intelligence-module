@@ -313,3 +313,45 @@ def test_calendar_dedupes_curated_against_events():
     cal = build_calendar([_E()])
     on_that_date = [m for m in cal["past"] if m.date == MILESTONES[0].date]
     assert len(on_that_date) == 1, "curated milestone must win over the derived event"
+
+
+# ── Recall protection: the cap must defer, never discard ──────────────────
+def test_proceedings_and_entity_signals_lift_court_coverage():
+    """Court coverage carries no penalty figure and no statute number, so the
+    original keyword signals scored it near zero — yet a Supreme Court privacy
+    hearing is exactly what the tracker exists to follow."""
+    from src.processing.scoring import calculate_relevance_score as sc
+    t = "SC to hear Meta-WhatsApp privacy policy case against CCI order"
+    plain = sc(t, "", "business-standard.com", "2026-09-20")
+    with_graph = sc(t, "", "business-standard.com", "2026-09-20", {"meta", "whatsapp"})
+    assert plain >= 6, "proceedings signal should lift court coverage"
+    assert with_graph > plain, "a follow-up on a tracked entity must rank higher"
+
+
+def test_tracked_entity_terms_match_headline_forms():
+    """The graph stores 'Meta Platforms' but headlines say 'Meta-WhatsApp' —
+    matching must be on distinctive tokens, not canonical names."""
+    from src.processing.scoring import calculate_relevance_score as sc
+    terms = {"meta", "star health", "mastercard"}
+    boosted = sc("Meta-WhatsApp privacy ruling", "", "x.com", "2026-09-20", terms)
+    baseline = sc("Meta-WhatsApp privacy ruling", "", "x.com", "2026-09-20", set())
+    assert boosted > baseline
+
+
+def test_backlog_roundtrip_and_ageing():
+    import json
+    from datetime import datetime, timedelta, timezone
+    from src.ingestion.models import RawItem
+    from src.sensing import backlog
+
+    items = [RawItem(source="s", title="kept item", url="https://x.test/1")]
+    backlog.save_backlog(items)
+    assert any(i.url == "https://x.test/1" for i in backlog.load_backlog())
+
+    stale = [{"source": "s", "title": "old", "url": "https://x.test/2",
+              "summary": "", "published": "",
+              "queued_at": (datetime.now(timezone.utc)
+                            - timedelta(days=backlog.MAX_AGE_DAYS + 5)).isoformat()}]
+    backlog.BACKLOG_PATH.write_text(json.dumps(stale), encoding="utf-8")
+    assert backlog.load_backlog() == [], "items older than the window must age out"
+    backlog.BACKLOG_PATH.unlink(missing_ok=True)

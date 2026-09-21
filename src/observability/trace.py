@@ -88,7 +88,8 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
     """Run the sensing pipeline with full per-item instrumentation."""
     from src.config import settings
     from src.processing.dedup import Deduplicator
-    from src.processing.scoring import calculate_relevance_score, score_breakdown
+    from src.processing.scoring import (calculate_relevance_score, score_breakdown,
+                                    tracked_entity_names)
     from src.sensing import fetchers, prefilter
     from src.sensing.registry import sources_upto_tier, stats as registry_stats
     from src.sensing.sweep import load_seen, save_seen
@@ -133,6 +134,7 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
         records[u].update(stage="dropped", exited_at="seen_filter",
                           reason="already ingested in a previous run")
     fresh = [it for it in raw if it.url and it.url not in known]
+    fresh_unique = {it.url for it in fresh}
 
     # ── Stage 3: near-duplicate suppression ─────────────────────────────
     dedup = Deduplicator(threshold=settings.dedup_threshold)
@@ -161,14 +163,16 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
             rec["stage"] = "passed_prefilter"
 
     # ── Stage 5: scoring + cap ──────────────────────────────────────────
+    tracked = tracked_entity_names()
     scored = []
     for it in kept:
-        s = calculate_relevance_score(it.title, it.summary, it.source, it.published)
+        s = calculate_relevance_score(it.title, it.summary, it.source, it.published, tracked)
         records[it.url]["score"] = s
         scored.append((s, it))
     scored.sort(key=lambda t: t[0], reverse=True)
     limit = settings.max_candidates_per_sweep
     candidates = [it for _s, it in scored[:limit]]
+    deferred = [it for _s, it in scored[limit:]]
     cand_urls = {it.url for it in candidates}
     for it in kept:
         if it.url in cand_urls:
@@ -176,10 +180,14 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
             records[it.url]["breakdown"] = score_breakdown(
                 it.title, it.summary, it.source, it.published)
         else:
-            records[it.url].update(stage="dropped", exited_at="spend_cap",
-                                   reason=f"outside top {limit} by score")
+            # Deferred, NOT dropped: the cap bounds spend, it does not judge.
+            records[it.url].update(
+                stage="deferred", exited_at="spend_cap",
+                reason=f"outside top {limit} this run — queued for the next sweep")
 
-    for it in raw:
+    from src.sensing.backlog import save_backlog
+    save_backlog(deferred)
+    for it in candidates:          # only extraction counts as processed
         if it.url:
             seen.add(it.url)
     save_seen(seen)
@@ -187,14 +195,14 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
     funnel = [
         {"stage": "Sensed", "count": len(records),
          "note": f"{len(sources)} sources, 0 paid API calls"},
-        {"stage": "Unseen", "count": len(fresh),
-         "note": f"{len(known)} already ingested"},
+        {"stage": "Unseen", "count": len(fresh_unique),
+         "note": f"{len(known)} already processed"},
         {"stage": "Deduplicated", "count": len(unique),
-         "note": f"{len(fresh) - len(unique)} near-duplicates suppressed"},
+         "note": f"{len(fresh_unique) - len(unique)} near-duplicates suppressed"},
         {"stage": "Passed pre-filter", "count": len(kept),
          "note": f"{sum(rejections.values())} rejected before any LLM call"},
         {"stage": "Candidates", "count": len(candidates),
-         "note": f"cap = top {limit} by 12-signal score"},
+         "note": f"cap = top {limit}; {len(deferred)} deferred to backlog, not lost"},
     ]
 
     trace = {
@@ -212,7 +220,7 @@ async def run_trace(tier: int = 2, include_watchlist: bool = True) -> dict:
         "rejections": rejections,
         "sources": sorted(health, key=lambda h: (h["status"] != "ok", -h["items"])),
         "items": sorted(records.values(),
-                        key=lambda r: (r["stage"] != "candidate",
+                        key=lambda r: ({"candidate": 0, "deferred": 1}.get(r["stage"], 2),
                                        -(r.get("score") or -99)))[:MAX_ITEMS_RECORDED],
         "crawler_view": _crawler_view(),
     }

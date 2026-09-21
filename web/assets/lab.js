@@ -13,11 +13,12 @@ const REASON_LABEL = {
   off_topic_regulatory: "Routine regulatory business (CRR, KYC, FEMA…)",
   noise_pattern: "Marketing / listicle / events noise",
   empty_title: "Empty title",
-  "already ingested in a previous run": "Seen in an earlier run",
+  "already ingested in a previous run": "Already processed (reached extraction)",
 };
 
 const STAGE_STYLE = {
   candidate: "bg-emerald-500/20 text-emerald-300",
+  deferred: "bg-amber-500/20 text-amber-300",
   passed_prefilter: "bg-blue-500/20 text-blue-300",
   dropped: "bg-slate-600/30 text-slate-400",
   sensed: "bg-slate-600/30 text-slate-400",
@@ -84,6 +85,7 @@ function renderFunnel() {
 function itemRow(i, idx) {
   const style = STAGE_STYLE[i.stage] || STAGE_STYLE.dropped;
   const label = i.stage === "candidate" ? "candidate"
+    : i.stage === "deferred" ? "deferred"
     : i.stage === "passed_prefilter" ? "passed" : (i.exited_at || i.stage);
   return `<tr class="border-t border-slate-800 hover:bg-slate-800/40 cursor-pointer" onclick="openDrawer(${idx})">
     <td class="py-2 pr-3"><span class="px-2 py-0.5 rounded-full text-xs ${style}">${esc(label)}</span></td>
@@ -115,6 +117,7 @@ function renderItems() {
 // ── Redacted ──────────────────────────────────────────────────────────────
 let activeReason = "";
 function renderRejected() {
+  // "deferred" is NOT a rejection — the cap queues, it does not discard.
   const rejected = TRACE.items.filter((i) => i.stage === "dropped");
   const counts = {};
   rejected.forEach((i) => { const r = i.reason || "unknown"; counts[r] = (counts[r] || 0) + 1; });

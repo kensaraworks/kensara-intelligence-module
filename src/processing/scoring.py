@@ -19,6 +19,16 @@ HIGH_KW = [
 MED_KW = [
     "gdpr", "ccpa", "ico", "edpb", "data breach", "data localization", "data localisation",
     "cross-border transfer", "right to erasure", "privacy by design",
+    "privacy policy", "data sharing", "consent", "data privacy",
+]
+
+# Live legal proceedings. These carry no penalty figure and often no statute
+# number, so the keyword signals miss them entirely — yet a Supreme Court
+# hearing on a privacy matter is among the most valuable things we can surface.
+PROCEEDING_KW = [
+    "supreme court", "high court", "nclat", "nclt", "tribunal", "tdsat",
+    "hearing", "appeal", "petition", "pil", "writ", "bench", "verdict",
+    "judgment", "ruling", "stay", "interim order", "notice to",
 ]
 INDIAN_CORPS = [
     "tcs", "infosys", "wipro", "reliance", "jio", "airtel", "hdfc", "icici", "sbi",
@@ -45,8 +55,14 @@ def compute_days_old(published_date: str) -> int:
 
 
 def calculate_relevance_score(
-    title: str, summary: str, source: str, published_date: str = ""
+    title: str, summary: str, source: str, published_date: str = "",
+    tracked_entities: set[str] | None = None,
 ) -> int:
+    """12+2 signal relevance score.
+
+    ``tracked_entities`` are normalised names already in the knowledge graph;
+    a story about one of them is probably a development in a case we follow.
+    """
     text = f"{title} {summary}".lower()
     source_l = source.lower()
     score = 0
@@ -94,6 +110,19 @@ def calculate_relevance_score(
     if any(k in source_l for k in
            ["et business", "economictimes", "inc42", "yourstory", "entrackr", "livemint"]):
         score += 2
+
+    # 13. Live legal proceeding (+3). Court coverage rarely trips the money or
+    #     statute signals, but a privacy matter before the SC/NCLAT is exactly
+    #     what the tracker exists to follow.
+    if any(k in text for k in PROCEEDING_KW):
+        score += 3
+
+    # 14. Concerns an entity we already track (+4). A follow-up on a case in our
+    #     graph — an appeal, a compliance order, a settlement — is the highest
+    #     value signal available, and keyword scoring alone cannot see it.
+    if tracked_entities:
+        if any(e in text for e in tracked_entities):
+            score += 4
 
     base = min(20, score)
 
@@ -217,3 +246,49 @@ def score_breakdown(title: str, summary: str, source: str,
         "signals": signals, "base": base, "capped_base": capped,
         "recency_delta": delta, "days_old": days, "final": capped + delta,
     }
+
+
+def tracked_entity_names(limit: int = 60) -> set[str]:
+    """Lower-cased names of entities already in the knowledge graph.
+
+    Cheap, cached per process. Failure is non-fatal — scoring simply falls back
+    to the keyword signals.
+    """
+    global _TRACKED_CACHE
+    try:
+        if _TRACKED_CACHE is not None:
+            return _TRACKED_CACHE
+    except NameError:
+        pass
+    # Match on DISTINCTIVE TERMS, not canonical names. The graph stores
+    # "Meta Platforms" but a headline says "Meta-WhatsApp", so a full-name
+    # substring test never fires. Aliases and the distinctive token both count.
+    generic = {"india", "indian", "limited", "ltd", "private", "pvt", "bank",
+               "commission", "authority", "ministry", "board", "court", "of",
+               "and", "the", "insurance", "financial", "services", "data"}
+    names: set[str] = set()
+    try:
+        from src.graph.build import build_graph
+
+        for e in build_graph().pageable[:limit]:
+            variants = [e.name or ""] + list(e.aliases or [])
+            for v in variants:
+                v = v.lower().strip()
+                if len(v) >= 4:
+                    names.add(v)
+                toks = [t for t in v.replace("/", " ").replace("-", " ").split()
+                        if len(t) >= 4 and t not in generic]
+                # A single distinctive token identifies a brand ("mastercard",
+                # "meta", "linkedin"); two-token names keep the pair too.
+                if toks:
+                    names.add(toks[0])
+                    if len(toks) >= 2:
+                        names.add(" ".join(toks[:2]))
+    except Exception:
+        names = set()
+    names = {n for n in names if len(n) >= 4}
+    _TRACKED_CACHE = names
+    return names
+
+
+_TRACKED_CACHE = None

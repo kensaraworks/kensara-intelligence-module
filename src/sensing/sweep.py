@@ -19,7 +19,7 @@ import structlog
 from src.config import settings
 from src.ingestion.models import RawItem
 from src.processing.dedup import Deduplicator
-from src.processing.scoring import calculate_relevance_score
+from src.processing.scoring import calculate_relevance_score, tracked_entity_names
 from src.sensing import fetchers, prefilter
 from src.sensing.registry import Source, sources_upto_tier
 
@@ -31,13 +31,19 @@ SEEN_CACHE = Path(__file__).resolve().parents[2] / ".cache" / "seen_urls.json"
 
 # ── Seen-URL state ────────────────────────────────────────────────────────
 def load_seen() -> set[str]:
-    """Known document URLs: DB first, local cache as fallback."""
+    """URLs we have actually PROCESSED (reached extraction).
+
+    Deliberately NOT "every URL we have ever laid eyes on". Marking merely-sensed
+    URLs as seen permanently excludes anything that lost the spend-cap race, which
+    silently destroys recall — the one thing this system must not do.
+    """
     urls: set[str] = set()
     try:
         from src.db.supabase_client import db
 
         if db.configured:
-            rows = db.select("documents", columns="url", limit=5000)
+            # stories_processed = items that actually went through the pipeline.
+            rows = db.select("stories_processed", columns="url", limit=5000)
             urls = {r["url"] for r in rows if r.get("url")}
             if urls:
                 return urls
@@ -136,15 +142,29 @@ async def run_sweep(tier: int = 3, include_watchlist: bool = True,
     # Cheap deterministic gate BEFORE any model call.
     kept, rejections = prefilter.filter_items(unique, primary_domains, always_domains)
 
+    # Items deferred by a previous cap re-enter the pool and compete again.
+    from src.sensing.backlog import load_backlog, save_backlog
+
+    carried = [i for i in load_backlog() if i.url not in seen]
+    kept = kept + [i for i in carried if i.url not in {k.url for k in kept}]
+
     # Final relevance ordering, then the spend cap.
+    tracked = tracked_entity_names()   # graph-aware: follow-ups on known cases rank up
     scored = sorted(
         kept,
-        key=lambda i: calculate_relevance_score(i.title, i.summary, i.source, i.published),
+        key=lambda i: calculate_relevance_score(i.title, i.summary, i.source,
+                                                i.published, tracked),
         reverse=True)
     limit = cap if cap is not None else settings.max_candidates_per_sweep
     candidates = scored[:limit] if limit else scored
 
-    for i in raw:
+    # The cap DEFERS, it does not discard. Survivors that missed the cut are
+    # queued for the next sweep instead of being lost when the feed rolls off.
+    deferred = scored[limit:] if limit else []
+    save_backlog(deferred)
+
+    # Only items that reached extraction count as processed.
+    for i in candidates:
         if i.url:
             seen.add(i.url)
     save_seen(seen)
@@ -161,6 +181,8 @@ async def run_sweep(tier: int = 3, include_watchlist: bool = True,
         "prefilter_rejected": sum(rejections.values()),
         "rejection_reasons": rejections,
         "kept": len(kept),
+        "carried_from_backlog": len(carried),
+        "deferred_to_backlog": len(deferred),
         "candidates": len(candidates),
         "new_urls": len(seen) - seen_before,
         "paid_api_calls": 0,
