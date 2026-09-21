@@ -107,6 +107,36 @@
       <h2 class="text-lg font-semibold text-gray-900 mb-2">Sources &amp; provenance</h2>
       <div class="bg-white rounded-xl border border-gray-200 p-4">
         <p class="text-sm text-gray-600 mb-3">{{ e.tier.desc }}</p>
+
+        {% if evidence %}
+        {# Showing the passage we matched, its hash and an independent archive
+           is what makes an entry checkable by a third party — and defensible. #}
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3">
+          <div class="text-xs font-semibold text-emerald-900 mb-1">
+            ✓ Verified against the official document
+          </div>
+          {% if evidence.excerpt %}
+          <blockquote class="text-sm text-emerald-900 italic border-l-2 border-emerald-300 pl-3 my-2">
+            “{{ evidence.excerpt|truncate(300) }}”
+          </blockquote>
+          {% endif %}
+          <div class="text-xs text-emerald-800 flex flex-wrap gap-x-4 gap-y-1 mt-2">
+            {% if evidence.entity_matched %}<span>entity matched</span>{% endif %}
+            {% if evidence.amount_matched %}<span>amount matched</span>{% endif %}
+            {% if evidence.date_matched %}<span>date matched</span>{% endif %}
+            {% if evidence.independent_sources %}<span>{{ evidence.independent_sources }} independent source{{ '' if evidence.independent_sources == 1 else 's' }}</span>{% endif %}
+          </div>
+          <div class="text-xs text-emerald-700 mt-2 space-x-3">
+            {% if evidence.archived_url %}
+            <a href="{{ evidence.archived_url }}" target="_blank" rel="noopener" class="hover:underline">📄 Archived copy ↗</a>
+            {% endif %}
+            {% if evidence.content_sha256 %}
+            <span class="text-emerald-600" title="SHA-256 of the document text as retrieved">
+              sha256:{{ evidence.content_sha256[:16] }}…</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
         {% if e.sources %}
         <ul class="space-y-2 text-sm">
           {% for s in e.sources %}

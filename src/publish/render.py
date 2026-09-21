@@ -375,10 +375,31 @@ def render_entity_pages(graph, env, site) -> int:
     return written
 
 
+def load_evidence() -> dict:
+    """Verification evidence by action id (public-readable; optional)."""
+    try:
+        from src.db.public_read import fetch_table
+
+        rows = fetch_table("verification_evidence")
+        out = {}
+        for r in rows:
+            aid = r.get("action_id")
+            if not aid:
+                continue
+            prev = out.get(aid)
+            rank = {"strong": 3, "moderate": 2, "weak": 1}
+            if not prev or rank.get(r.get("strength"), 0) > rank.get(prev.get("strength"), 0):
+                out[aid] = r
+        return out
+    except Exception:
+        return {}
+
+
 def render_site() -> dict:
     from src.graph.build import build_graph, persist
 
     graph = build_graph()
+    evidence_by_id = load_evidence()
     events = [ge.event for ge in graph.events]
     if not events:
         log.warning("render.no_events")
@@ -408,7 +429,8 @@ def render_site() -> dict:
                            jsonld=case_jsonld(e),
                            subject=ge.subject if ge else None,
                            authorities=ge.authorities if ge else [],
-                           contradictions=ge.contradictions if ge else [])
+                           contradictions=ge.contradictions if ge else [],
+                           evidence=evidence_by_id.get(e.id))
         d = case_root / e.slug
         d.mkdir(parents=True, exist_ok=True)
         (d / "index.html").write_text(html, encoding="utf-8")

@@ -1,15 +1,19 @@
-"""Weekly enforcement tracker — now with the intelligence upgrades.
+"""Enforcement tracker — discovery, extraction, verification.
 
 Pipeline:
-  0. Load ReviewMemory (feedback loop, #4).
-  1. Search sweep (Serper/Tavily).
-  2. Dedup (TF-IDF) + 12-signal score; record stories.
-  3. GUARDRAIL: keep only the top `max_candidates_per_sweep` unseen survivors.
-  4. Per survivor: fetch FULL article text (#1) → LLM extract with few-shot (#4).
-  5. Drop known false positives (#4); ground against official sources (#3).
-  6. Cluster/merge same-event candidates into one row + sources (#2).
-  7. Insert into the review queue (auto-publish only grounded high-confidence).
-  8. GUARDRAIL: prune stories older than retention; rebuild snapshot.
+  0. Load ReviewMemory (feedback loop).
+  1. FREE sensing net: 40+ sources, document-watch, entity watches (Phase 2).
+     No paid search is used to find anything.
+  2. Score + record; the sweep has already deduped and pre-filtered.
+  3. GUARDRAIL: only the top `max_candidates_per_sweep` survivors continue.
+  4. Per survivor: fetch full article text → LLM extract with few-shot.
+  5. Drop known false positives.
+  6. VERIFY (Phase 3): locate the official document, OPEN it, and confirm the
+     entity and amount are actually in it. Only then primary_confirmed.
+  7. Cluster/merge same-event candidates; persist the evidence trail.
+  8. Insert into the review queue. Auto-publish is available ONLY to claims a
+     primary document substantiated — never on a domain match alone.
+  9. GUARDRAIL: prune old stories; rebuild snapshot + static site.
 """
 from __future__ import annotations
 
@@ -25,8 +29,9 @@ from src.processing import llm_extractor
 from src.processing.clustering import merge_candidate_rows
 from src.processing.feedback import ReviewMemory
 from src.processing.fulltext import fetch_article_text
-from src.processing.grounding import find_official_source, is_trusted
 from src.processing.scoring import calculate_relevance_score, classify_section, classify_sector
+from src.publish.model import TIER_PRIMARY
+from src.verification.verify import Verifier
 
 log = structlog.get_logger(__name__)
 
@@ -51,8 +56,9 @@ def _candidate_row(item: RawItem, ex, score: int, official_url: str | None) -> d
     section = _AUTHORITY_SECTION.get(ex.authority) or classify_section(combined, ex.authority)
     sector = ex.sector if ex.sector and ex.sector != "Other" else classify_sector(combined)
     confidence = "high" if official_url else (ex.confidence_score or "medium")
-    grounded_high = bool(official_url) and confidence == "high"
-    needs_review = not (settings.auto_publish_high_confidence and grounded_high)
+    # Auto-publish is decided later, once verification has actually opened the
+    # official document — a URL on a .gov.in domain proves nothing by itself.
+    needs_review = True
     return {
         "id": _new_id(),
         "section": section,
@@ -108,8 +114,10 @@ async def update_enforcement_tracker(tier: int = 2) -> dict:
     capped.sort(key=lambda t: t[1], reverse=True)
 
     few_shot = memory.few_shot_block()
+    verifier = Verifier()
     rows: list[dict] = []
-    discarded = fp_skipped = grounded = 0
+    evidence_rows: list[tuple[str, object]] = []
+    discarded = fp_skipped = confirmed = 0
 
     for item, score in capped:
         full_text = await fetch_article_text(item.url, fallback=item.summary)  # #1
@@ -121,17 +129,29 @@ async def update_enforcement_tracker(tier: int = 2) -> dict:
         if memory.is_known_false_positive(ex.company, ex.authority):  # #4
             fp_skipped += 1
             continue
-        official = None
-        if is_trusted(item.url):
-            official = item.url
-        else:
-            official = await find_official_source(  # #3
-                ex.company, ex.authority, keywords=ex.violation_type)
-        if official:
-            grounded += 1
-        rows.append(_candidate_row(item, ex, score, official))
+        # Phase 3: open the official document and check it actually says this.
+        vr = await verifier.verify(
+            company=ex.company, authority=ex.authority,
+            penalty=ex.penalty_amount, date=item.published or "",
+            source_urls=[item.url], violation=ex.violation_type)
+        if vr.trust_tier == TIER_PRIMARY:
+            confirmed += 1
+        row = _candidate_row(item, ex, score, vr.official_url or None)
+        row["trust_tier"] = vr.trust_tier
+        row["independent_sources"] = vr.independent_sources
+        row["verification_strength"] = vr.match.strength if vr.match else "none"
+        evidence_rows.append((row["id"], vr))
+        rows.append(row)
 
     merged = merge_candidate_rows(rows)  # #2
+
+    # Only a claim substantiated by a primary document may skip human review.
+    if settings.auto_publish_high_confidence:
+        for row in merged:
+            substantiated = (row.get("trust_tier") == TIER_PRIMARY
+                             and row.get("verification_strength") == "strong")
+            if substantiated:
+                row["needs_review"] = False
 
     inserted = published = 0
     for row in merged:
@@ -140,6 +160,7 @@ async def update_enforcement_tracker(tier: int = 2) -> dict:
             inserted += 1
             if not row["needs_review"]:
                 published += 1
+    store.record_evidence(evidence_rows)
 
     store.prune_old_stories(settings.story_retention_days)  # GUARDRAIL
     from src.publish.snapshot import publish_all
@@ -148,12 +169,12 @@ async def update_enforcement_tracker(tier: int = 2) -> dict:
     store.log_run("enforcement", "ok",
                   detail=(f"sources={sweep.stats.get('sources_polled')} "
                           f"raw={sweep.stats.get('raw_items')} capped={len(capped)} "
-                          f"merged={len(merged)} inserted={inserted} grounded={grounded}"),
+                          f"merged={len(merged)} inserted={inserted} confirmed={confirmed}"),
                   items_found=inserted)
     summary = {
         "status": "ok", "sensing": sweep.stats, "candidates": len(capped),
         "merged": len(merged), "inserted": inserted, "auto_published": published,
-        "suppressed": suppressed, "grounded": grounded,
+        "suppressed": suppressed, "primary_confirmed": confirmed,
         "false_positives_skipped": fp_skipped, "discarded": discarded,
     }
     log.info("enforcement.done", **summary)

@@ -59,3 +59,21 @@ def fetch_published() -> list[dict]:
             log.warning("public_read.failed", error=str(exc))
             return []
     return []
+
+
+def fetch_table(table: str, columns: str = "*", limit: int = 2000) -> list[dict]:
+    """Generic anon read for public-readable tables (evidence, entities...)."""
+    if not PUBLIC_URL or not PUBLIC_ANON_KEY:
+        return []
+    try:
+        with httpx.Client(timeout=25) as c:
+            r = c.get(f"{PUBLIC_URL}/rest/v1/{table}",
+                      headers={"apikey": PUBLIC_ANON_KEY,
+                               "Authorization": f"Bearer {PUBLIC_ANON_KEY}"},
+                      params={"select": columns, "limit": str(limit)})
+        if r.status_code >= 400:
+            return []
+        rows = r.json()
+        return rows if isinstance(rows, list) else []
+    except Exception:
+        return []

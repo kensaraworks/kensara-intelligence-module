@@ -295,3 +295,36 @@ def _public_row(r: dict[str, Any]) -> dict[str, Any]:
         "trust_tier": r.get("trust_tier", ""),
         "slug": r.get("slug", ""),
     }
+
+
+# ── Verification evidence (#Phase 3) ───────────────────────────────────────
+EVIDENCE = "verification_evidence"
+
+
+def record_evidence(pairs, client: SupabaseClient | None = None) -> None:
+    """Persist the proof behind each primary_confirmed entry.
+
+    Stores what we read (sha256 + excerpt), where (official + archived URL) and
+    why it counted (which checks matched) — so any entry can be defended.
+    """
+    rows = []
+    for action_id, vr in pairs or []:
+        if not getattr(vr, "official_url", ""):
+            continue
+        m, ev = getattr(vr, "match", None), getattr(vr, "evidence", None)
+        rows.append({
+            "action_id": action_id,
+            "official_url": vr.official_url,
+            "archived_url": getattr(ev, "archived_url", "") or "",
+            "content_sha256": getattr(ev, "content_sha256", "") or "",
+            "excerpt": (getattr(ev, "excerpt", "") or "")[:1000],
+            "entity_matched": bool(m and m.entity_matched),
+            "amount_matched": bool(m and m.amount_matched),
+            "date_matched": bool(m and m.date_matched),
+            "strength": m.strength if m else "none",
+            "reasons": (m.reasons if m else []),
+            "independent_sources": getattr(vr, "independent_sources", 0),
+        })
+    if rows:
+        _client(client).upsert(EVIDENCE, rows, on_conflict="action_id,official_url",
+                               ignore_duplicates=False)

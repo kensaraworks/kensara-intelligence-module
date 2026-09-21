@@ -224,3 +224,53 @@ def test_gnews_fallback_does_not_forge_primary_source():
     proxy = dataclasses.replace(src, kind="gnews", domain="",
                                 is_primary_source=False, always_relevant=False)
     assert proxy.is_primary_source is False and proxy.domain == ""
+
+
+# ── Phase 3: verification & trust ─────────────────────────────────────────
+def test_indian_amount_formats_normalise():
+    from src.verification.amounts import parse_amount
+    vals = [parse_amount(x).value for x in
+            ["Rs 5,00,000", "₹5 lakh", "INR 500000", "0.05 crore", "Five Lakh"]]
+    assert len(set(vals)) == 1 and vals[0] == 500000
+
+
+def test_amount_currency_not_conflated():
+    from src.verification.amounts import parse_amount
+    a, b = parse_amount("₹1.2 billion"), parse_amount("€1.2 billion")
+    assert a.currency == "INR" and b.currency == "EUR"
+    assert not a.close_to(b)
+
+
+def test_verification_requires_entity_not_just_amount():
+    """The guard against false attribution: a document mentioning the right
+    penalty but the wrong company must NOT verify."""
+    from src.verification.matcher import match_document
+    doc = ("ADJUDICATION ORDER. In the matter of Reliance Securities Limited. "
+           "The Adjudicating Officer imposes a penalty of Rs. 5,00,000/- for "
+           "failure to comply with the cyber security framework.") * 2
+    good = match_document(doc, company="Reliance Securities", penalty="Rs 5 lakh")
+    bad = match_document(doc, company="HDFC Bank", penalty="Rs 5 lakh")
+    assert good.verified and good.strength == "strong"
+    assert not bad.verified and "entity_not_found" in bad.reasons
+
+
+def test_entity_alone_is_not_verification():
+    from src.verification.matcher import match_document
+    doc = ("The Reserve Bank of India today published a list of regulated "
+           "entities including Mastercard for informational purposes. " * 6)
+    res = match_document(doc, company="Mastercard", penalty="Rs 25 crore")
+    assert res.entity_matched and not res.amount_matched
+    assert not res.verified, "a mere mention must not count as proof"
+
+
+def test_independent_sources_collapses_same_domain():
+    from src.verification.verify import independent_source_count
+    assert independent_source_count(
+        ["https://et.com/a", "https://www.et.com/b", "https://livemint.com/c"]) == 2
+
+
+def test_evidence_hash_is_stable():
+    from src.verification.archive import content_hash
+    assert content_hash("abc") == content_hash("abc")
+    assert content_hash("abc") != content_hash("abd")
+    assert len(content_hash("abc")) == 64
