@@ -4,27 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Enforcement Review — KensaraAI Admin</title>
+  <title>Intelligence Hub — KensaraAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { darkMode: 'class' };</script>
   <style>
     body { background:#0b1220; color:#e5e7eb; }
     .card { background:#111a2e; border:1px solid #1f2b45; }
     .field { background:#0b1220; border:1px solid #24314e; color:#e5e7eb; }
     .field:focus { outline:none; border-color:#3b82f6; }
-    [x-cloak]{display:none!important;}
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   </style>
 </head>
 <body class="min-h-screen">
-  <!-- Top bar -->
-  <header class="border-b border-slate-800 bg-[#0d1526]">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+
+  <header class="border-b border-slate-800 bg-[#0d1526] sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
       <div class="flex items-center gap-3">
         <span class="text-lg font-bold text-blue-400">Kensara<span class="text-slate-200">AI</span></span>
-        <span class="text-slate-500 text-sm">· Enforcement Review Cockpit</span>
+        <span class="text-slate-500 text-sm">· Intelligence Hub</span>
       </div>
       <div class="flex items-center gap-3 text-sm">
         <span id="userEmail" class="text-slate-400"></span>
+        <a href="/" target="_blank" class="hidden sm:inline px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Tracker ↗</a>
+        <a href="lab.html" target="_blank" class="hidden sm:inline px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Pipeline Lab ↗</a>
         <button id="logoutBtn" class="hidden px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700">Sign out</button>
       </div>
     </div>
@@ -43,32 +44,75 @@
     <p id="configHint" class="text-slate-500 text-xs mt-6">Create reviewer accounts in the Supabase dashboard → Authentication → Users.</p>
   </div>
 
-  <!-- Dashboard -->
-  <main id="dashView" class="hidden max-w-6xl mx-auto px-4 py-8">
-    <!-- Tabs -->
-    <div class="flex gap-2 mb-6 text-sm">
-      <button data-tab="queue" class="tab-btn px-4 py-2 rounded-lg bg-blue-600">Review Queue <span id="queueCount" class="ml-1 opacity-80"></span></button>
-      <button data-tab="intel" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Intelligence Feed</button>
-      <button data-tab="insights" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Brief &amp; Angles</button>
-      <button data-tab="health" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Scraper Health</button>
-      <button data-tab="ops" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Manual Triggers</button>
+  <main id="dashView" class="hidden max-w-7xl mx-auto px-4 py-6">
+
+    <div class="flex gap-2 mb-6 text-sm flex-wrap">
+      <button data-tab="hub"       class="tab-btn px-4 py-2 rounded-lg bg-blue-600">Hub</button>
+      <button data-tab="queue"     class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Review Queue <span id="queueCount" class="ml-1 opacity-80"></span></button>
+      <button data-tab="published" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Published</button>
+      <button data-tab="intel"     class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Intelligence Feed</button>
+      <button data-tab="graph"     class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Knowledge Graph</button>
+      <button data-tab="insights"  class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Brief &amp; Angles</button>
+      <button data-tab="pipeline"  class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Pipeline &amp; Sync</button>
     </div>
 
-    <!-- Queue -->
-    <section id="tab-queue">
+    <!-- ══ HUB ══ -->
+    <section id="tab-hub">
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5" id="hubStats"></div>
+      <div class="grid lg:grid-cols-3 gap-5">
+        <div class="card rounded-xl p-5 lg:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold">Needs your attention</h2>
+            <button data-goto="queue" class="text-xs text-blue-400 hover:underline">Open review queue →</button>
+          </div>
+          <div id="hubAttention" class="space-y-2 text-sm">Loading…</div>
+        </div>
+        <div class="card rounded-xl p-5">
+          <h2 class="font-semibold mb-3">Last pipeline runs</h2>
+          <div id="hubRuns" class="space-y-2 text-xs">Loading…</div>
+        </div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-5 mt-5">
+        <div class="card rounded-xl p-5">
+          <h2 class="font-semibold mb-3">Provenance mix</h2>
+          <p class="text-slate-400 text-xs mb-3">Published entries by trust tier. Primary-confirmed is what search and generative engines will trust.</p>
+          <div id="hubTiers" class="space-y-3"></div>
+        </div>
+        <div class="card rounded-xl p-5">
+          <h2 class="font-semibold mb-3">Quick actions</h2>
+          <div class="flex flex-wrap gap-2" id="hubActions"></div>
+          <p id="hubActionMsg" class="text-xs text-slate-400 mt-3"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ REVIEW QUEUE ══ -->
+    <section id="tab-queue" class="hidden">
       <div id="queueEmpty" class="hidden card rounded-xl p-10 text-center text-slate-400">
-        🎉 Review queue is empty. New auto-detected leads will appear here after the next sweep.
+        🎉 Review queue is empty. New auto-detected leads appear here after the next sweep.
       </div>
       <div id="queueRoot" class="space-y-5"></div>
     </section>
 
-    <!-- Intelligence Feed -->
+    <!-- ══ PUBLISHED ══ -->
+    <section id="tab-published" class="hidden">
+      <div class="card rounded-xl p-5">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h2 class="font-semibold">Published cases</h2>
+          <span class="text-slate-500 text-xs">Live on the public tracker. Unpublishing returns an entry to the review queue.</span>
+          <input id="pubSearch" class="field rounded-lg px-2.5 py-1.5 text-xs w-56 ml-auto" placeholder="Search company / authority…" />
+        </div>
+        <div id="publishedTable" class="overflow-x-auto text-sm">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ══ INTELLIGENCE FEED ══ -->
     <section id="tab-intel" class="hidden">
       <div class="card rounded-xl p-5">
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h2 class="font-semibold">Top-scored intelligence stream</h2>
-            <p class="text-slate-400 text-sm">Every ingested story, ranked by the 12-signal relevance score. ≥12 fires an alert; ≥6 is shown here.</p>
+            <p class="text-slate-400 text-sm">Every ingested story, ranked by the relevance score. ≥12 fires an alert.</p>
           </div>
           <div class="flex items-center gap-2 text-xs">
             <span class="text-slate-500">Min score</span>
@@ -83,7 +127,27 @@
       </div>
     </section>
 
-    <!-- Brief & Angles (#6 + #9) -->
+    <!-- ══ KNOWLEDGE GRAPH ══ -->
+    <section id="tab-graph" class="hidden">
+      <div class="card rounded-xl p-5">
+        <div class="flex flex-wrap items-center gap-3 mb-2">
+          <h2 class="font-semibold">Resolved entities</h2>
+          <select id="graphType" class="field rounded-lg px-2 py-1 text-xs ml-auto">
+            <option value="">All types</option>
+            <option value="company">Companies</option>
+            <option value="regulator">Regulators</option>
+            <option value="court">Courts</option>
+          </select>
+        </div>
+        <p class="text-slate-400 text-xs mb-4">
+          Name variants collapsed into one entity — this is what links a case to its follow-ups,
+          and what the tracker's entity pages are built from.
+        </p>
+        <div id="graphRoot" class="overflow-x-auto text-sm">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ══ BRIEF & ANGLES ══ -->
     <section id="tab-insights" class="hidden">
       <div class="grid lg:grid-cols-2 gap-5">
         <div class="card rounded-xl p-5">
@@ -91,48 +155,52 @@
             <h2 class="font-semibold">Weekly executive brief</h2>
             <span id="briefPeriod" class="text-xs text-slate-500"></span>
           </div>
-          <div id="briefRoot" class="prose-invert text-sm text-slate-300 space-y-2">Loading…</div>
+          <div id="briefRoot" class="text-sm text-slate-300 space-y-2">Loading…</div>
         </div>
         <div class="card rounded-xl p-5">
           <h2 class="font-semibold mb-3">Suggested content angles</h2>
-          <p class="text-slate-400 text-xs mb-4">SEO blog angles generated from top-scored stories + competitor gaps.</p>
+          <p class="text-slate-400 text-xs mb-4">Blog angles generated from top-scored stories + competitor gaps.</p>
           <div id="anglesRoot" class="space-y-3 text-sm">Loading…</div>
         </div>
       </div>
     </section>
 
-    <!-- Health -->
-    <section id="tab-health" class="hidden">
-      <div class="card rounded-xl p-5">
-        <h2 class="font-semibold mb-4">Recent pipeline runs</h2>
-        <div id="healthRoot" class="text-sm text-slate-300">Loading…</div>
-      </div>
-    </section>
-
-    <!-- Ops -->
-    <section id="tab-ops" class="hidden">
-      <div class="card rounded-xl p-5">
-        <h2 class="font-semibold mb-2">Trigger a sweep on demand</h2>
-        <p class="text-slate-400 text-sm mb-4">Runs the corresponding GitHub Actions workflow. Set your repo + a GitHub Personal Access Token (stored only in your browser's localStorage).</p>
-        <div class="grid sm:grid-cols-2 gap-3 mb-5">
+    <!-- ══ PIPELINE & SYNC ══ -->
+    <section id="tab-pipeline" class="hidden">
+      <div class="card rounded-xl p-5 mb-5">
+        <h2 class="font-semibold mb-2">Manual sync</h2>
+        <p class="text-slate-400 text-sm mb-4">
+          Dispatches the GitHub Actions workflow. Set your repo and a fine-grained token
+          (Actions: read &amp; write) once — it is stored only in this browser.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">GitHub Repository (owner/repo)</label>
-            <input id="ghRepo" class="field rounded-lg px-3 py-2 w-full" value="kensaraworks/kensara-intelligence-module" placeholder="kensaraworks/kensara-intelligence-module" />
+            <label class="block text-xs text-slate-400 mb-1">Repository (owner/repo)</label>
+            <input id="ghRepo" class="field rounded-lg px-3 py-2 w-full" value="kensaraworks/kensara-intelligence-module" />
           </div>
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs text-slate-400">GitHub Personal Access Token</label>
-              <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=Kensara+Intelligence+Admin" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline">Generate token ↗</a>
+              <label class="block text-xs text-slate-400">GitHub token</label>
+              <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=Kensara+Intelligence+Admin" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline">Generate ↗</a>
             </div>
-            <input id="ghToken" type="password" class="field rounded-lg px-3 py-2 w-full" placeholder="ghp_... (stored locally)" />
+            <input id="ghToken" type="password" class="field rounded-lg px-3 py-2 w-full" placeholder="ghp_… (stored locally)" />
           </div>
         </div>
-        <div class="flex flex-wrap gap-3">
-          <button data-wf="enforcement_cron.yml" class="wf-btn px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600">Enforcement sweep</button>
-          <button data-wf="news_scan_cron.yml" class="wf-btn px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-600">News scan</button>
-          <button data-wf="competitor_cron.yml" class="wf-btn px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-600">Competitor crawl</button>
-        </div>
+        <div id="wfButtons" class="flex flex-wrap gap-2"></div>
         <p id="opsMsg" class="text-sm mt-4 text-slate-400"></p>
+      </div>
+
+      <div class="card rounded-xl p-5 mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold">Recent workflow runs</h2>
+          <button id="refreshRuns" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700">Refresh</button>
+        </div>
+        <div id="wfRuns" class="text-sm text-slate-400">Add a repo + token above to see live run status.</div>
+      </div>
+
+      <div class="card rounded-xl p-5">
+        <h2 class="font-semibold mb-3">Source health (last pipeline runs)</h2>
+        <div id="healthRoot" class="text-sm text-slate-300 overflow-x-auto">Loading…</div>
       </div>
     </section>
   </main>

@@ -106,3 +106,46 @@ window.DEMO_RUNS = [
   { ran_at: "2026-09-16T00:30:00Z", job: "competitor", source: "cookieyes.com", status: "blocked", items_found: 0, detail: "HTTP 403 — Cloudflare challenge" },
   { ran_at: "2026-09-16T00:30:00Z", job: "competitor", source: "tsaaro.com", status: "ok", items_found: 12, detail: "" },
 ];
+
+window.DEMO_ENTITIES = [
+  { key: "meta platforms", slug: "meta-platforms", name: "Meta Platforms", entity_type: "company",
+    aliases: ["WhatsApp / Meta", "Facebook India"] },
+  { key: "star health allied insurance", slug: "star-health-allied-insurance",
+    name: "Star Health and Allied Insurance", entity_type: "company", aliases: ["Star Health"] },
+  { key: "mastercard", slug: "mastercard", name: "Mastercard", entity_type: "company", aliases: [] },
+  { key: "american express", slug: "american-express", name: "American Express",
+    entity_type: "company", aliases: ["American Express & Diners Club"] },
+  { key: "reserve bank india", slug: "reserve-bank-india", name: "Reserve Bank of India",
+    entity_type: "regulator", aliases: ["RBI"] },
+  { key: "competition commission india", slug: "competition-commission-india",
+    name: "Competition Commission of India", entity_type: "regulator", aliases: ["CCI"] },
+  { key: "cert-in", slug: "cert-in", name: "CERT-In", entity_type: "regulator", aliases: [] },
+  { key: "supreme court india", slug: "supreme-court-india", name: "Supreme Court of India",
+    entity_type: "court", aliases: ["Supreme Court"] },
+];
+
+// event_entities links, so the graph tab can show a case count per entity.
+window.DEMO_EVENT_LINKS = [
+  { event_id: "IND-CCI-001", entity_key: "meta platforms", role: "subject" },
+  { event_id: "INTL-EU-001", entity_key: "meta platforms", role: "subject" },
+  { event_id: "IND-CCI-001", entity_key: "competition commission india", role: "authority" },
+  { event_id: "IND-RBI-001", entity_key: "mastercard", role: "subject" },
+  { event_id: "IND-RBI-001", entity_key: "reserve bank india", role: "authority" },
+  { event_id: "IND-RBI-002", entity_key: "american express", role: "subject" },
+  { event_id: "IND-RBI-002", entity_key: "reserve bank india", role: "authority" },
+  { event_id: "IND-CERT-002", entity_key: "star health allied insurance", role: "subject" },
+  { event_id: "IND-CERT-002", entity_key: "cert-in", role: "authority" },
+  { event_id: "IND-SC-001", entity_key: "supreme court india", role: "authority" },
+];
+
+// Verification evidence for one queued candidate, so the review card shows
+// what a substantiated entry actually looks like.
+window.DEMO_EVIDENCE = [
+  { action_id: "AUTO-2026-0D5E44", official_url: "https://indiankanoon.org/example/data-broker",
+    archived_url: "https://web.archive.org/web/2026/https://indiankanoon.org/example/data-broker",
+    content_sha256: "9f2c1b7a4e6d8c0f3a5b2e9d7c4f1a8b6e3d0c7f2a9b5e8d1c4f7a0b3e6d9c2f",
+    excerpt: "…the Court awarded compensation of Rs. 15,00,000 (Rupees Fifteen Lakh only) against "
+             + "the data broker for unlawfully scraping and reselling personal data…",
+    entity_matched: true, amount_matched: true, date_matched: false,
+    strength: "strong", independent_sources: 2, verified_at: "2026-09-17T04:40:00Z" },
+];
