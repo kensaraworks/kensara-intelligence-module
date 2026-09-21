@@ -11,6 +11,7 @@ Usage (locally or in GitHub Actions):
     python -m src.main snapshot        # rebuild JSON snapshot + re-render static site
     python -m src.main render          # re-render the static site only
     python -m src.main graph           # rebuild the knowledge graph (idempotent)
+    python -m src.main sense           # run the free sensing net (no paid APIs)
     python -m src.main all             # run everything (handy for first seed)
 """
 from __future__ import annotations
@@ -64,6 +65,12 @@ async def _dispatch(cmd: str) -> None:
         print(await generate_content_angles())
     elif cmd == "snapshot":
         print(publish_all())
+    elif cmd == "sense":
+        from src.sensing.sweep import run_sweep
+        res = await run_sweep(tier=2, include_watchlist=True)
+        print(res.stats)
+        for i in res.items[:20]:
+            print(f"  [{i.source[:22]:22}] {i.title[:76]}")
     elif cmd == "graph":
         from src.graph.build import build_graph, persist
         g = build_graph()

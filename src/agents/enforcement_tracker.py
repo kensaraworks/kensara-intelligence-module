@@ -18,13 +18,11 @@ from datetime import datetime, timezone
 
 import structlog
 
-from src.config import ENFORCEMENT_QUERIES, settings
+from src.config import settings
 from src.db import store
-from src.ingestion import search_sweep
 from src.ingestion.models import RawItem
 from src.processing import llm_extractor
 from src.processing.clustering import merge_candidate_rows
-from src.processing.dedup import Deduplicator
 from src.processing.feedback import ReviewMemory
 from src.processing.fulltext import fetch_article_text
 from src.processing.grounding import find_official_source, is_trusted
@@ -77,43 +75,37 @@ def _candidate_row(item: RawItem, ex, score: int, official_url: str | None) -> d
     }
 
 
-async def update_enforcement_tracker() -> dict:
-    log.info("enforcement.start", search=settings.has_search, llm=settings.has_llm)
+async def update_enforcement_tracker(tier: int = 2) -> dict:
+    """Discovery now runs on the free sensing net (Phase 2).
 
-    if not settings.has_search:
-        store.log_run("enforcement", "error", detail="no search provider configured")
-        from src.publish.snapshot import publish_all
-        publish_all()
-        return {"status": "skipped", "reason": "no_search_provider"}
+    Paid search is no longer used to *find* anything — only to ground a specific
+    candidate against an official source. The pipeline therefore runs end-to-end
+    with no search key at all.
+    """
+    from src.sensing.sweep import log_health, run_sweep
+
+    log.info("enforcement.start", llm=settings.has_llm,
+             grounding_available=settings.has_search)
 
     memory = ReviewMemory.load()  # #4
-    items = await search_sweep.sweep(ENFORCEMENT_QUERIES, num=10)
 
-    dedup = Deduplicator(threshold=settings.dedup_threshold)
-    dedup.seed([f["fingerprint_vector"] for f in store.recent_fingerprints()
-                if f.get("fingerprint_vector")])
+    # Free, broad discovery: 40+ sources, document-watch, entity expansion.
+    sweep = await run_sweep(tier=tier, include_watchlist=True,
+                            cap=settings.max_candidates_per_sweep)
+    log_health(sweep.health, job="enforcement")
 
-    # ── Dedup + score, collect unseen survivors ──────────────────────────
-    survivors: list[tuple[RawItem, int]] = []
-    suppressed = 0
-    for item in items:
+    suppressed = sweep.stats.get("near_duplicates", 0)
+    capped: list[tuple[RawItem, int]] = []
+    for item in sweep.items:
         if not item.url or store.enforcement_source_seen(item.url):
             continue
-        is_dup, _sim, fp = dedup.is_duplicate(item.text())
         score = calculate_relevance_score(item.title, item.summary, item.source, item.published)
         store.record_story({
-            "source": item.source, "headline": item.title, "url": item.url, "score": score,
-            "fingerprint_vector": fp,
-            "action_taken": "suppressed" if is_dup else "scanned",
+            "source": item.source, "headline": item.title, "url": item.url,
+            "score": score, "action_taken": "scanned",
         })
-        if is_dup:
-            suppressed += 1
-        else:
-            survivors.append((item, score))
-
-    # ── GUARDRAIL: cap LLM/API spend to the top-N by score ───────────────
-    survivors.sort(key=lambda t: t[1], reverse=True)
-    capped = survivors[: settings.max_candidates_per_sweep]
+        capped.append((item, score))
+    capped.sort(key=lambda t: t[1], reverse=True)
 
     few_shot = memory.few_shot_block()
     rows: list[dict] = []
@@ -154,11 +146,12 @@ async def update_enforcement_tracker() -> dict:
     publish_all()
 
     store.log_run("enforcement", "ok",
-                  detail=(f"scanned={len(items)} capped={len(capped)} merged={len(merged)} "
-                          f"inserted={inserted} grounded={grounded} fp_skipped={fp_skipped}"),
+                  detail=(f"sources={sweep.stats.get('sources_polled')} "
+                          f"raw={sweep.stats.get('raw_items')} capped={len(capped)} "
+                          f"merged={len(merged)} inserted={inserted} grounded={grounded}"),
                   items_found=inserted)
     summary = {
-        "status": "ok", "scanned": len(items), "candidates": len(capped),
+        "status": "ok", "sensing": sweep.stats, "candidates": len(capped),
         "merged": len(merged), "inserted": inserted, "auto_published": published,
         "suppressed": suppressed, "grounded": grounded,
         "false_positives_skipped": fp_skipped, "discarded": discarded,

@@ -167,3 +167,60 @@ def test_contradiction_normalises_amounts():
     from src.graph.build import _normalise_amount
     assert _normalise_amount("₹213.14 Cr") == _normalise_amount("₹213.14 crore")
     assert _normalise_amount("₹213.14 Cr") != _normalise_amount("₹250 Cr")
+
+
+# ── Phase 2: sensing net ──────────────────────────────────────────────────
+def test_registry_discovery_is_free():
+    from src.sensing.registry import ALL_SOURCES, stats
+    s = stats()
+    assert s["paid_api_sources"] == 0, "discovery must not depend on paid APIs"
+    assert s["total"] >= 40
+    assert all(x.kind in ("rss", "docwatch", "gnews") for x in ALL_SOURCES)
+
+
+def test_gnews_url_is_india_scoped():
+    from src.sensing.registry import gnews_rss
+    url = gnews_rss("DPDPA India")
+    assert "news.google.com/rss/search" in url and "gl=IN" in url
+
+
+def test_prefilter_rejects_routine_regulatory_business():
+    from src.sensing.prefilter import evaluate
+    # Primary source, but routine banking business — must NOT flood the queue.
+    v = evaluate("Reserve Bank of India (Priority Sector Lending) Directions",
+                 "", "rbi.org.in", is_primary_source=True)
+    assert not v.keep and v.reason == "off_topic_regulatory"
+
+
+def test_prefilter_rejects_corporate_noise():
+    from src.sensing.prefilter import evaluate
+    v = evaluate("Zeropearl VC leads Rs 11.4 Cr seed round in surgery platform",
+                 "startup data", "entrackr.com")
+    assert not v.keep and v.reason == "corporate_noise"
+
+
+def test_prefilter_keeps_real_enforcement():
+    from src.sensing.prefilter import evaluate
+    v = evaluate("SEBI imposes penalty on broker for cybersecurity lapses",
+                 "", "sebi.gov.in", is_primary_source=True)
+    assert v.keep and v.priority >= 5
+
+
+def test_prefilter_always_relevant_bypasses_anchor():
+    from src.sensing.prefilter import evaluate
+    # A CERT-In advisory ID need not contain the word "privacy".
+    v = evaluate("CERT-In Advisory CIAD-2026-0012", "", "cert-in.org.in",
+                 is_primary_source=True, always_relevant=True)
+    assert v.keep
+
+
+def test_gnews_fallback_does_not_forge_primary_source():
+    """A press article surfaced via a regulator's fallback must not be
+    attributed to that regulator — it would forge a primary-source label."""
+    import dataclasses
+    from src.sensing.registry import Source
+    src = Source("CCI orders", "docwatch", 0, "https://cci.gov.in/x",
+                 domain="cci.gov.in", is_primary_source=True)
+    proxy = dataclasses.replace(src, kind="gnews", domain="",
+                                is_primary_source=False, always_relevant=False)
+    assert proxy.is_primary_source is False and proxy.domain == ""
