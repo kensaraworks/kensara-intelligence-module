@@ -240,6 +240,8 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /admin
+Disallow: /lab.html
+Disallow: /lab
 
 User-agent: GPTBot
 Allow: /

@@ -148,3 +148,72 @@ def classify_sector(text: str) -> str:
            ["government", "aadhaar", "uidai", "ministry", "govt", "public sector", "state"]):
         return "Government"
     return "Other"
+
+
+# ── Explainability: which signals actually fired ──────────────────────────
+def score_breakdown(title: str, summary: str, source: str,
+                    published_date: str = "") -> dict:
+    """Same 12 signals as calculate_relevance_score, but itemised.
+
+    Used by the inspection lab so a human can see *why* an item scored what it
+    did, rather than trusting an opaque number.
+    """
+    text = f"{title} {summary}".lower()
+    source_l = (source or "").lower()
+    signals: list[dict] = []
+
+    def add(name: str, points: int, detail: str = "") -> None:
+        if points:
+            signals.append({"signal": name, "points": points, "detail": detail})
+
+    hi = [kw for kw in HIGH_KW if kw in text]
+    add("High-relevance keywords", 2 * len(hi), ", ".join(hi[:6]))
+    med = [kw for kw in MED_KW if kw in text]
+    add("Medium-relevance keywords", len(med), ", ".join(med[:6]))
+    if any(s in source_l for s in ["meity", "dpbi", "cert-in", "rbi", "yourstory",
+                                   "inc42", "entrackr"]):
+        add("India-origin source", 2, source)
+    m = _MONEY_RE.search(text)
+    if m:
+        add("Monetary penalty mentioned", 3, m.group(0))
+    corp = [c for c in INDIAN_CORPS if c in text]
+    if corp or _CORP_SUFFIX_RE.search(text):
+        add("Named Indian enterprise", 2, ", ".join(corp[:4]) or "corporate suffix")
+    sec = _SECTION_RE.search(text)
+    if sec or "schedule i" in text:
+        add("Specific section/rule cited", 2, sec.group(0) if sec else "schedule i")
+    verbs = [w for w in ["penalty", "penalize", "fine", "adjudicate", "prosecute",
+                         "order", "investigation"] if w in text]
+    if verbs:
+        add("Judicial/enforcement verbs", 2, ", ".join(verbs[:4]))
+    urg = [w for w in ["effective immediately", "deadline", "urgency", "timeline",
+                       "urgent"] if w in text]
+    if urg:
+        add("Urgency language", 2, ", ".join(urg[:3]))
+    if ("rbi" in source_l or "reserve bank" in text) and "dpdpa" in text:
+        add("RBI x DPDPA intersection", 3)
+    if "dataguidance" in source_l or "dsci" in source_l:
+        add("Authority source bonus", 2, source)
+    elif "iapp" in source_l or "privacyenforcement" in source_l:
+        add("Authority source bonus", 1, source)
+    if any(k in source_l for k in ["indiankanoon", "supreme court", "high court",
+                                   "adjudication", "nclt", "cci"]):
+        pts = 4 + (1 if _SECTION_RULE_RE.search(text) else 0)
+        add("Judicial court source", pts, source)
+    if any(k in source_l for k in ["et business", "economictimes", "inc42",
+                                   "yourstory", "entrackr", "livemint"]):
+        add("Indian business press", 2, source)
+
+    base = sum(s["points"] for s in signals)
+    capped = min(20, base)
+    days = compute_days_old(published_date)
+    is_court = any(k in source_l for k in ["indiankanoon", "supreme court", "high court"])
+    if is_court:
+        delta = 3 if days <= 30 else (0 if days <= 180 else (-2 if days <= 730 else -4))
+    else:
+        delta = (3 if days <= 7 else
+                 (1 if days <= 30 else (0 if days <= 90 else (-3 if days <= 180 else -6))))
+    return {
+        "signals": signals, "base": base, "capped_base": capped,
+        "recency_delta": delta, "days_old": days, "final": capped + delta,
+    }

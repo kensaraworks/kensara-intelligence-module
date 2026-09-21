@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Pipeline Lab — KensaraAI Intelligence Module</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background:#0b1220; color:#e5e7eb; }
+    .card { background:#111a2e; border:1px solid #1f2b45; }
+    .field { background:#0b1220; border:1px solid #24314e; color:#e5e7eb; }
+    .field:focus { outline:none; border-color:#3b82f6; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <header class="border-b border-slate-800 bg-[#0d1526] sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-lg font-bold text-blue-400">Kensara<span class="text-slate-200">AI</span></span>
+        <span class="text-slate-500 text-sm">· Pipeline Lab</span>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <span id="traceMeta" class="text-slate-500"></span>
+        <a href="/" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700">View tracker</a>
+      </div>
+    </div>
+  </header>
+
+  <div id="noTrace" class="hidden max-w-2xl mx-auto mt-24 card rounded-2xl p-8 text-center">
+    <h1 class="text-xl font-semibold mb-2">No trace found</h1>
+    <p class="text-slate-400 text-sm mb-4">Run an instrumented pipeline pass to populate this lab:</p>
+    <code class="mono block bg-[#0b1220] border border-slate-800 rounded-lg p-3 text-blue-300">python -m src.main trace</code>
+  </div>
+
+  <main id="lab" class="hidden max-w-7xl mx-auto px-4 py-6">
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6 text-sm flex-wrap">
+      <button data-tab="funnel" class="tab-btn px-4 py-2 rounded-lg bg-blue-600">Funnel</button>
+      <button data-tab="items" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Every Item</button>
+      <button data-tab="rejected" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">What Was Redacted</button>
+      <button data-tab="sources" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Sources</button>
+      <button data-tab="crawler" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Crawler View</button>
+      <button data-tab="config" class="tab-btn px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Config</button>
+    </div>
+
+    <!-- FUNNEL -->
+    <section id="tab-funnel">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6" id="funnelCards"></div>
+      <div class="card rounded-xl p-5 mb-6">
+        <h2 class="font-semibold mb-4">Where items were dropped</h2>
+        <div id="rejectionBars" class="space-y-3"></div>
+      </div>
+      <div class="card rounded-xl p-5">
+        <h2 class="font-semibold mb-1">Top candidates that survived</h2>
+        <p class="text-slate-400 text-xs mb-4">These are the only items that reach the LLM. Click any row to see its score breakdown.</p>
+        <div id="candidateList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- EVERY ITEM -->
+    <section id="tab-items" class="hidden">
+      <div class="card rounded-xl p-5">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h2 class="font-semibold">Every item the crawler touched</h2>
+          <select id="stageFilter" class="field rounded-lg px-2 py-1 text-xs ml-auto">
+            <option value="">All stages</option>
+            <option value="candidate">Survived → candidate</option>
+            <option value="passed_prefilter">Passed pre-filter</option>
+            <option value="dropped">Dropped</option>
+          </select>
+          <input id="itemSearch" class="field rounded-lg px-2.5 py-1.5 text-xs w-56" placeholder="Search title / source…" />
+        </div>
+        <div id="itemsTable" class="overflow-x-auto text-sm"></div>
+        <div class="text-xs text-slate-500 mt-3" id="itemsCount"></div>
+      </div>
+    </section>
+
+    <!-- REDACTED -->
+    <section id="tab-rejected" class="hidden">
+      <div class="card rounded-xl p-5">
+        <h2 class="font-semibold mb-1">What the pipeline redacted, and why</h2>
+        <p class="text-slate-400 text-xs mb-4">
+          Every rejection is deterministic and reversible — if something here should have survived,
+          the rule that killed it is named, so it can be fixed.
+        </p>
+        <div id="reasonChips" class="flex flex-wrap gap-2 mb-4"></div>
+        <div id="rejectedTable" class="overflow-x-auto text-sm"></div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section id="tab-sources" class="hidden">
+      <div class="card rounded-xl p-5">
+        <h2 class="font-semibold mb-1">Source health</h2>
+        <p class="text-slate-400 text-xs mb-4">A source returning 0 items is the failure mode that matters — it goes dark silently.</p>
+        <div id="sourcesTable" class="overflow-x-auto text-sm"></div>
+      </div>
+    </section>
+
+    <!-- CRAWLER VIEW -->
+    <section id="tab-crawler" class="hidden">
+      <div class="card rounded-xl p-5 mb-5">
+        <h2 class="font-semibold mb-1">What a JavaScript-less crawler receives</h2>
+        <p class="text-slate-400 text-xs mb-4">
+          GPTBot, ClaudeBot, PerplexityBot and CCBot largely do not execute JavaScript.
+          If <span class="text-slate-300">case rows</span> is 0 on the tracker, the citation strategy is broken.
+        </p>
+        <div id="crawlerPages" class="space-y-3"></div>
+      </div>
+      <div class="card rounded-xl p-5">
+        <h2 class="font-semibold mb-3">robots.txt directives</h2>
+        <div id="robotsBox" class="text-sm"></div>
+      </div>
+    </section>
+
+    <!-- CONFIG -->
+    <section id="tab-config" class="hidden">
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="card rounded-xl p-5">
+          <h2 class="font-semibold mb-3">Run configuration</h2>
+          <div id="configBox" class="text-sm"></div>
+        </div>
+        <div class="card rounded-xl p-5">
+          <h2 class="font-semibold mb-3">Source registry</h2>
+          <div id="registryBox" class="text-sm"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Item detail drawer -->
+  <div id="drawer" class="hidden fixed inset-0 bg-black/60 z-20" onclick="if(event.target===this)closeDrawer()">
+    <div class="absolute right-0 top-0 h-full w-full max-w-xl bg-[#111a2e] border-l border-slate-800 overflow-y-auto p-6">
+      <button onclick="closeDrawer()" class="text-slate-400 hover:text-slate-200 text-sm mb-4">✕ Close</button>
+      <div id="drawerBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/lab.js"></script>
+</body>
+</html>

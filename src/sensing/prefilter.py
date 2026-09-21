@@ -108,8 +108,13 @@ def evaluate(title: str, summary: str = "", source: str = "",
 
 
 def filter_items(items: list, primary_domains: set[str] | None = None,
-                 always_relevant_domains: set[str] | None = None) -> tuple[list, dict]:
-    """Return (kept_items_sorted_by_priority, rejection_stats)."""
+                 always_relevant_domains: set[str] | None = None,
+                 trace: list | None = None) -> tuple[list, dict]:
+    """Return (kept_items_sorted_by_priority, rejection_stats).
+
+    Pass ``trace`` to collect a per-item verdict for the inspection lab — every
+    item, kept or rejected, with the reason. Opaque filtering is unauditable.
+    """
     primary_domains = primary_domains or set()
     always_relevant_domains = always_relevant_domains or set()
     kept, stats = [], {}
@@ -118,6 +123,12 @@ def filter_items(items: list, primary_domains: set[str] | None = None,
         is_primary = any(d in haystack for d in primary_domains)
         always = any(d in haystack for d in always_relevant_domains)
         v = evaluate(it.title, it.summary, it.source, is_primary, always)
+        if trace is not None:
+            trace.append({
+                "title": it.title, "url": it.url, "source": it.source,
+                "kept": v.keep, "reason": v.reason, "priority": v.priority,
+                "is_primary_source": is_primary, "always_relevant": always,
+            })
         if v.keep:
             kept.append((v.priority, it))
         else:
