@@ -43,10 +43,20 @@
       <h2 class="sr-only">Key facts</h2>
       <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
         <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
-          <dt class="text-gray-500">Entity</dt><dd class="font-medium text-gray-900">{{ e.company }}</dd>
+          <dt class="text-gray-500">Entity</dt>
+          <dd class="font-medium text-gray-900">
+            {% if subject and subject.entity_type in ('company','regulator','court') %}
+              <a href="{{ site.base_url }}/{{ subject.url_path }}" class="text-blue-700 hover:underline">{{ e.company }}</a>
+            {% else %}{{ e.company }}{% endif %}
+          </dd>
         </div>
         <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
-          <dt class="text-gray-500">Authority</dt><dd class="font-medium text-gray-900">{{ e.authority }}</dd>
+          <dt class="text-gray-500">Authority</dt>
+          <dd class="font-medium text-gray-900">
+            {% if authorities %}
+              {% for a in authorities %}<a href="{{ site.base_url }}/{{ a.url_path }}" class="text-blue-700 hover:underline">{{ a.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+            {% else %}{{ e.authority }}{% endif %}
+          </dd>
         </div>
         <div class="flex justify-between sm:block border-b border-gray-50 pb-2 sm:border-0 sm:pb-0">
           <dt class="text-gray-500">Date</dt><dd class="font-medium text-gray-900">{{ e.date or '—' }}</dd>
@@ -69,6 +79,22 @@
         </div>
       </dl>
     </section>
+
+    {% if contradictions %}
+    {# Most trackers silently pick one number. Showing the disagreement is the
+       honest move and is itself a trust signal worth citing. #}
+    <section class="mb-6">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <h2 class="text-sm font-semibold text-amber-900 mb-2">⚠ Sources disagree</h2>
+        <ul class="text-sm text-amber-800 space-y-1">
+          {% for c in contradictions %}
+          <li><strong>{{ c.label }}:</strong> {{ c.values|join(' vs ') }}</li>
+          {% endfor %}
+        </ul>
+        <p class="text-xs text-amber-700 mt-2">We record the disagreement rather than silently selecting one value. Where an official document exists, it takes precedence.</p>
+      </div>
+    </section>
+    {% endif %}
 
     {% if e.summary %}
     <section class="mb-6">

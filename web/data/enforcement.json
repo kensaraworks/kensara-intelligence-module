@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "last_updated": "2026-09-20",
-    "last_updated_formatted": "20 September 2026",
-    "generated_at": "2026-09-20T06:38:24.639068+00:00"
+    "last_updated": "2026-09-21",
+    "last_updated_formatted": "21 September 2026",
+    "generated_at": "2026-09-21T00:51:14.661227+00:00"
   },
   "statistics": {
     "total_all_sections": 10,
@@ -22,21 +22,6 @@
   "sections": {
     "dpdpa_board": [
       {
-        "id": "IND-DPDPA-002",
-        "date": "2025-01-03",
-        "authority": "MeitY",
-        "company": "Draft DPDP Rules",
-        "sector": "Government",
-        "violation_type": "Subordinate legislation",
-        "dpdpa_section": "DPDP Rules (Draft)",
-        "summary": "MeitY published the draft Digital Personal Data Protection Rules for public consultation, detailing consent, breach-notification and Board-operation mechanics.",
-        "penalty_amount": "N/A (Rules)",
-        "outcome": "Consultation",
-        "source_url": "https://www.meity.gov.in/",
-        "sources": [],
-        "official_source_url": null
-      },
-      {
         "id": "IND-DPDPA-001",
         "date": "2023-08-11",
         "authority": "MeitY",
@@ -46,10 +31,31 @@
         "dpdpa_section": "DPDP Act 2023",
         "summary": "The Digital Personal Data Protection Act, 2023 received Presidential assent, establishing India's first comprehensive data-protection statute with penalties up to ₹250 crore per breach.",
         "penalty_amount": "Up to ₹250 Cr (framework)",
+        "penalty_amount_inr": 2500000000.0,
         "outcome": "Enacted",
         "source_url": "https://www.meity.gov.in/data-protection-framework",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
+      },
+      {
+        "id": "IND-DPDPA-002",
+        "date": "2025-01-03",
+        "authority": "MeitY",
+        "company": "Draft DPDP Rules",
+        "sector": "Government",
+        "violation_type": "Subordinate legislation",
+        "dpdpa_section": "DPDP Rules (Draft)",
+        "summary": "MeitY published the draft Digital Personal Data Protection Rules for public consultation, detailing consent, breach-notification and Board-operation mechanics.",
+        "penalty_amount": "N/A (Rules)",
+        "penalty_amount_inr": 0.0,
+        "outcome": "Consultation",
+        "source_url": "https://www.meity.gov.in/",
+        "sources": [],
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       }
     ],
     "sectoral_regulators": [
@@ -63,10 +69,13 @@
         "dpdpa_section": "Competition Act §4",
         "summary": "The CCI imposed a ₹213.14 crore penalty on Meta over WhatsApp's 2021 privacy policy and ordered a 5-year bar on sharing user data with other Meta companies for advertising.",
         "penalty_amount": "₹213.14 Cr",
+        "penalty_amount_inr": 2131400000.0,
         "outcome": "Fine Imposed",
         "source_url": "https://www.cci.gov.in/",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       },
       {
         "id": "IND-RBI-001",
@@ -78,10 +87,13 @@
         "dpdpa_section": "RBI Storage of Payment System Data (2018)",
         "summary": "The RBI barred Mastercard from onboarding new domestic customers for failing to comply with the 2018 payment-data localisation directive. The ban was lifted in June 2022 after compliance.",
         "penalty_amount": "Business restriction",
+        "penalty_amount_inr": 0.0,
         "outcome": "Business Ban / Restriction",
         "source_url": "https://www.rbi.org.in/#mastercard-2021",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       },
       {
         "id": "IND-RBI-002",
@@ -93,28 +105,16 @@
         "dpdpa_section": "RBI Storage of Payment System Data (2018)",
         "summary": "The RBI stopped American Express and Diners Club from onboarding new customers over payment-data localisation non-compliance; the restriction on Amex was lifted in August 2022.",
         "penalty_amount": "Business restriction",
+        "penalty_amount_inr": 0.0,
         "outcome": "Business Ban / Restriction",
         "source_url": "https://www.rbi.org.in/#amex-2021",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       }
     ],
     "cert_in_breach": [
-      {
-        "id": "IND-CERT-002",
-        "date": "2024-09-20",
-        "authority": "CERT-In / IRDAI",
-        "company": "Star Health & Allied Insurance",
-        "sector": "Healthcare",
-        "violation_type": "Sensitive health-data breach",
-        "dpdpa_section": "IT Act §43A / §70B",
-        "summary": "A reported breach exposed policyholder health and personal data of Star Health customers, prompting CERT-In and IRDAI scrutiny and litigation over the alleged leak.",
-        "penalty_amount": "Investigation",
-        "outcome": "Investigation Ongoing",
-        "source_url": "https://www.cert-in.org.in/#star-health-2024",
-        "sources": [],
-        "official_source_url": null
-      },
       {
         "id": "IND-CERT-001",
         "date": "2022-04-28",
@@ -125,10 +125,31 @@
         "dpdpa_section": "IT Act §70B(6) — CERT-In 2022 Directions",
         "summary": "CERT-In issued directions requiring cyber-incident reporting within 6 hours and 180-day log retention, effective 28 June 2022 — India's first strictly enforced breach-notification regime.",
         "penalty_amount": "Penalty / imprisonment (framework)",
+        "penalty_amount_inr": 0.0,
         "outcome": "Enacted",
         "source_url": "https://www.cert-in.org.in/#directions-2022",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
+      },
+      {
+        "id": "IND-CERT-002",
+        "date": "2024-09-20",
+        "authority": "CERT-In / IRDAI",
+        "company": "Star Health & Allied Insurance",
+        "sector": "Healthcare",
+        "violation_type": "Sensitive health-data breach",
+        "dpdpa_section": "IT Act §43A / §70B",
+        "summary": "A reported breach exposed policyholder health and personal data of Star Health customers, prompting CERT-In and IRDAI scrutiny and litigation over the alleged leak.",
+        "penalty_amount": "Investigation",
+        "penalty_amount_inr": 0.0,
+        "outcome": "Investigation Ongoing",
+        "source_url": "https://www.cert-in.org.in/#star-health-2024",
+        "sources": [],
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       }
     ],
     "courts_case_law": [
@@ -142,28 +163,16 @@
         "dpdpa_section": "Constitution Art. 21",
         "summary": "A nine-judge Supreme Court bench unanimously held privacy to be a fundamental right, laying the constitutional foundation for India's data-protection regime.",
         "penalty_amount": "Landmark judgment",
+        "penalty_amount_inr": 0.0,
         "outcome": "Adjudication Order Issued",
         "source_url": "https://main.sci.gov.in/",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       }
     ],
     "international_benchmarks": [
-      {
-        "id": "INTL-EU-002",
-        "date": "2024-10-24",
-        "authority": "Irish Data Protection Commission",
-        "company": "LinkedIn",
-        "sector": "Social Media / Tech",
-        "violation_type": "Behavioural-advertising consent",
-        "dpdpa_section": "GDPR Art. 6",
-        "summary": "The Irish DPC fined LinkedIn €310 million over unlawful processing of member data for targeted advertising — relevant to Indian IT/ITES firms serving EU data subjects.",
-        "penalty_amount": "€310 Million",
-        "outcome": "Fine Imposed",
-        "source_url": "https://www.dataprotection.ie/#linkedin-2024",
-        "sources": [],
-        "official_source_url": null
-      },
       {
         "id": "INTL-EU-001",
         "date": "2023-05-22",
@@ -174,10 +183,31 @@
         "dpdpa_section": "GDPR Art. 46",
         "summary": "The Irish DPC fined Meta €1.2 billion — the largest GDPR penalty to date — for transferring EU user data to the US without adequate safeguards. A benchmark for cross-border transfer risk.",
         "penalty_amount": "€1.2 Billion",
+        "penalty_amount_inr": 10800000000.0,
         "outcome": "Fine Imposed",
         "source_url": "https://www.dataprotection.ie/#meta-2023",
         "sources": [],
-        "official_source_url": null
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
+      },
+      {
+        "id": "INTL-EU-002",
+        "date": "2024-10-24",
+        "authority": "Irish Data Protection Commission",
+        "company": "LinkedIn",
+        "sector": "Social Media / Tech",
+        "violation_type": "Behavioural-advertising consent",
+        "dpdpa_section": "GDPR Art. 6",
+        "summary": "The Irish DPC fined LinkedIn €310 million over unlawful processing of member data for targeted advertising — relevant to Indian IT/ITES firms serving EU data subjects.",
+        "penalty_amount": "€310 Million",
+        "penalty_amount_inr": 2790000000.0,
+        "outcome": "Fine Imposed",
+        "source_url": "https://www.dataprotection.ie/#linkedin-2024",
+        "sources": [],
+        "official_source_url": "",
+        "trust_tier": "",
+        "slug": ""
       }
     ]
   }

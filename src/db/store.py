@@ -285,8 +285,13 @@ def _public_row(r: dict[str, Any]) -> dict[str, Any]:
         "dpdpa_section": r.get("dpdpa_section", ""),
         "summary": r.get("summary", ""),
         "penalty_amount": r.get("penalty_amount", ""),
+        # Needed for aggregates (entity totals, sector sums) — these are
+        # citable stats, so the machine-readable value must survive.
+        "penalty_amount_inr": float(r.get("penalty_amount_inr") or 0),
         "outcome": r.get("outcome", ""),
         "source_url": r.get("source_url", ""),
         "sources": r.get("sources", []) or [],
         "official_source_url": r.get("official_source_url", ""),
+        "trust_tier": r.get("trust_tier", ""),
+        "slug": r.get("slug", ""),
     }

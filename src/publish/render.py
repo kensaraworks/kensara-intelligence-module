@@ -207,7 +207,7 @@ def write_csv(events: list[RenderEvent], path: Path) -> None:
                         " | ".join(s.url for s in e.sources)])
 
 
-def write_sitemap(events: list[RenderEvent], path: Path) -> None:
+def write_sitemap(events: list[RenderEvent], path: Path, entities: list | None = None) -> None:
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = [f"  <url><loc>{BASE_URL}/</loc><lastmod>{today}</lastmod>"
             f"<changefreq>daily</changefreq><priority>1.0</priority></url>"]
@@ -216,6 +216,10 @@ def write_sitemap(events: list[RenderEvent], path: Path) -> None:
             f"  <url><loc>{BASE_URL}/{e.url_path}</loc>"
             f"<lastmod>{e.updated_at or today}</lastmod>"
             f"<changefreq>monthly</changefreq><priority>0.8</priority></url>")
+    for ent in entities or []:
+        urls.append(
+            f"  <url><loc>{BASE_URL}/{ent.url_path}</loc><lastmod>{today}</lastmod>"
+            f"<changefreq>weekly</changefreq><priority>0.7</priority></url>")
     path.write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -304,11 +308,82 @@ def related_for(e: RenderEvent, events: list[RenderEvent], limit: int = 4) -> li
 
 
 # ── Orchestrator ──────────────────────────────────────────────────────────
+def _fmt_inr(total: float) -> str:
+    if not total:
+        return ""
+    if total >= 1_00_00_000:
+        return f"₹{total / 1_00_00_000:,.2f} Cr".replace(".00", "")
+    if total >= 1_00_000:
+        return f"₹{total / 1_00_000:,.2f} Lakh".replace(".00", "")
+    return f"₹{total:,.0f}"
+
+
+def render_entity_pages(graph, env, site) -> int:
+    """Entity pages — pulled forward from Phase 4.
+
+    Entities are the expensive part of the graph; once resolved, these pages are
+    nearly free and multiply the long-tail surface while the window is open.
+    """
+    tmpl = env.get_template("entity.html")
+    root = WEB / "entity"
+    root.mkdir(parents=True, exist_ok=True)
+    type_labels = {"company": "Organisation", "regulator": "Regulator", "court": "Court"}
+    written = 0
+
+    for ent in graph.pageable:
+        evs = graph.entity_events(ent)
+        if not evs:
+            continue
+        evs.sort(key=lambda g: g.event.date or "", reverse=True)
+        years = [g.event.year for g in evs if g.event.year.isdigit()]
+        authorities = {a.name for g in evs for a in g.authorities}
+        total = sum(g.event.penalty_inr or 0 for g in evs)
+
+        related = []
+        for g in evs:
+            if g.subject and g.subject.key != ent.key:
+                related.append(g.subject)
+            for a in g.authorities:
+                if a.key != ent.key:
+                    related.append(a)
+        seen, uniq = set(), []
+        for r in related:
+            if r.key not in seen and r.entity_type in {"company", "regulator", "court"}:
+                seen.add(r.key)
+                uniq.append(r)
+
+        jsonld = json.dumps({
+            "@context": "https://schema.org",
+            "@type": "Organization" if ent.entity_type == "company" else "GovernmentOrganization",
+            "@id": f"{BASE_URL}/{ent.url_path}#entity",
+            "name": ent.name,
+            "alternateName": sorted(ent.aliases) or None,
+            "subjectOf": [{"@type": "Article", "url": f"{BASE_URL}/{g.event.url_path}"}
+                          for g in evs],
+        }, ensure_ascii=False, indent=2)
+
+        html = tmpl.render(
+            site=site, ent=ent, events=evs,
+            type_label=type_labels.get(ent.entity_type, "Entity"),
+            total_penalty=_fmt_inr(total), authorities=sorted(authorities),
+            first_year=min(years) if years else "—", last_year=max(years) if years else "—",
+            related_entities=uniq[:12], jsonld=jsonld)
+        d = root / ent.slug
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "index.html").write_text(html, encoding="utf-8")
+        written += 1
+    return written
+
+
 def render_site() -> dict:
-    events = load_events()
+    from src.graph.build import build_graph, persist
+
+    graph = build_graph()
+    events = [ge.event for ge in graph.events]
     if not events:
         log.warning("render.no_events")
         return {"status": "skipped", "reason": "no_events"}
+    by_slug = {ge.event.slug: ge for ge in graph.events}
 
     stats, grouped = build_stats(events)
     env = _env()
@@ -328,8 +403,12 @@ def render_site() -> dict:
     tmpl = env.get_template("case.html")
     live_slugs = {e.slug for e in events}
     for e in events:
+        ge = by_slug.get(e.slug)
         html = tmpl.render(site=site, e=e, related=related_for(e, events),
-                           jsonld=case_jsonld(e))
+                           jsonld=case_jsonld(e),
+                           subject=ge.subject if ge else None,
+                           authorities=ge.authorities if ge else [],
+                           contradictions=ge.contradictions if ge else [])
         d = case_root / e.slug
         d.mkdir(parents=True, exist_ok=True)
         (d / "index.html").write_text(html, encoding="utf-8")
@@ -341,13 +420,20 @@ def render_site() -> dict:
             log.warning("render.stale_case_page", slug=child.name,
                         note="case no longer published; page left in place to avoid a 404")
 
+    # Entity pages (Phase 1 graph → long-tail surface)
+    entity_pages = render_entity_pages(graph, env, site)
+
     # Machine surfaces
     write_csv(events, WEB / "data" / "enforcement.csv")
-    write_sitemap(events, WEB / "sitemap.xml")
+    write_sitemap(events, WEB / "sitemap.xml", entities=graph.pageable)
     write_robots(WEB / "robots.txt")
     write_llms_txt(events, stats, WEB / "llms.txt")
 
-    result = {"status": "ok", "events": len(events), "pages": len(events) + 1,
+    persist(graph)  # best-effort; never required
+
+    result = {"status": "ok", "events": len(events), "entities": len(graph.entities),
+              "entity_pages": entity_pages, "pages": len(events) + entity_pages + 1,
+              "contradictions": sum(len(g.contradictions) for g in graph.events),
               "primary_confirmed": stats["primary_confirmed"]}
     log.info("render.done", **result)
     return result

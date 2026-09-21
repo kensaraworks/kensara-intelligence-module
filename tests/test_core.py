@@ -108,3 +108,62 @@ def test_fulltext_truncates():
     html = "<html><body><script>x</script><article>" + ("word " * 3000) + "</article></body></html>"
     text = clean_html_to_text(html, max_chars=500)
     assert len(text) <= 500 and "word" in text and "x" not in text.split()
+
+
+# ── Phase 1: knowledge graph ──────────────────────────────────────────────
+def test_entity_resolver_merges_aliases():
+    from src.graph.entities import EntityResolver
+    r = EntityResolver()
+    a = r.resolve("WhatsApp / Meta")
+    b = r.resolve("Meta Platforms")
+    c = r.resolve("Facebook India")
+    assert a.key == b.key == c.key, "Meta variants must resolve to one entity"
+    assert a.name == "Meta Platforms"
+
+
+def test_entity_resolver_splits_multi_authority():
+    from src.graph.entities import EntityResolver
+    r = EntityResolver()
+    parts = r.resolve_authorities("CERT-In / IRDAI")
+    assert len(parts) == 2
+    names = {p.name for p in parts}
+    assert any("CERT" in n for n in names)
+    assert any("Insurance" in n for n in names)
+
+
+def test_entity_classification_excludes_non_entities():
+    from src.graph.entities import classify_entity
+    assert classify_entity("K.S. Puttaswamy v Union of India") == "case"
+    assert classify_entity("All body corporates & intermediaries") == "generic"
+    assert classify_entity("Reserve Bank of India") == "regulator"
+    assert classify_entity("Mastercard") == "company"
+
+
+def test_graph_links_entity_across_cases():
+    from src.graph.build import build_graph
+    rows = [
+        {"id": "1", "company": "WhatsApp / Meta", "authority": "Competition Commission of India",
+         "date": "2024-11-18", "section": "sectoral_regulators", "penalty_amount_inr": 2131400000},
+        {"id": "2", "company": "Meta Platforms", "authority": "Irish Data Protection Commission",
+         "date": "2023-05-22", "section": "international_benchmarks", "penalty_amount_inr": 10800000000},
+        {"id": "3", "company": "Mastercard", "authority": "Reserve Bank of India",
+         "date": "2021-07-14", "section": "sectoral_regulators"},
+    ]
+    g = build_graph(rows)
+    meta = next(e for e in g.entities if e.name == "Meta Platforms")
+    assert len(g.entity_events(meta)) == 2, "both Meta cases must link to one entity"
+    assert all(e.event_ids for e in g.pageable)
+
+
+def test_graph_is_idempotent():
+    from src.graph.build import build_graph
+    rows = [{"id": "1", "company": "Mastercard", "authority": "Reserve Bank of India",
+             "date": "2021-07-14", "section": "sectoral_regulators"}]
+    a, b = build_graph(rows), build_graph(rows)
+    assert [e.slug for e in a.entities] == [e.slug for e in b.entities]
+
+
+def test_contradiction_normalises_amounts():
+    from src.graph.build import _normalise_amount
+    assert _normalise_amount("₹213.14 Cr") == _normalise_amount("₹213.14 crore")
+    assert _normalise_amount("₹213.14 Cr") != _normalise_amount("₹250 Cr")

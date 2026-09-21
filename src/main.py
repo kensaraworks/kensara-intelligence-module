@@ -10,6 +10,7 @@ Usage (locally or in GitHub Actions):
     python -m src.main angles          # story -> SEO content angles
     python -m src.main snapshot        # rebuild JSON snapshot + re-render static site
     python -m src.main render          # re-render the static site only
+    python -m src.main graph           # rebuild the knowledge graph (idempotent)
     python -m src.main all             # run everything (handy for first seed)
 """
 from __future__ import annotations
@@ -63,6 +64,11 @@ async def _dispatch(cmd: str) -> None:
         print(await generate_content_angles())
     elif cmd == "snapshot":
         print(publish_all())
+    elif cmd == "graph":
+        from src.graph.build import build_graph, persist
+        g = build_graph()
+        print({"events": len(g.events), "entities": len(g.entities),
+               "pageable": len(g.pageable), "persist": persist(g)})
     elif cmd == "render":
         from src.publish.render import render_site
         print(render_site())
