@@ -141,15 +141,30 @@ def build_graph(rows: list[dict] | None = None) -> KnowledgeGraph:
 
 
 def _load_rows() -> list[dict]:
-    """Prefer the live DB; fall back to the committed snapshot."""
+    """Service key → public anon view → committed snapshot.
+
+    The anon step matters: local runs and CI without the service key still
+    render the real live dataset instead of drifting to a stale snapshot.
+    """
     try:
         from src.db import store
 
         rows = store.all_published()
         if rows:
+            log.info("graph.source", source="supabase_service", count=len(rows))
             return rows
     except Exception as exc:
         log.warning("graph.db_unavailable", error=str(exc))
+
+    try:
+        from src.db.public_read import fetch_published
+
+        rows = fetch_published()
+        if rows:
+            log.info("graph.source", source="supabase_anon", count=len(rows))
+            return rows
+    except Exception as exc:
+        log.warning("graph.anon_read_failed", error=str(exc))
 
     import json
     from pathlib import Path

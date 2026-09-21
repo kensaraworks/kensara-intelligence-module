@@ -66,6 +66,39 @@ _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 _STOP = {"the", "of", "and", "a", "an", "for", "ltd", "limited", "pvt", "private", "inc"}
 
 
+_DATE_FORMATS = (
+    "%Y-%m-%d", "%d %B %Y", "%d %b %Y", "%B %d, %Y", "%b %d, %Y",
+    "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d", "%d-%m-%Y", "%B %Y", "%b %Y", "%Y",
+)
+
+
+def normalize_date(value: str) -> str:
+    """Coerce any reported date to ISO YYYY-MM-DD.
+
+    LLM extraction returns human formats ("Aug 1, 2024"), which sort
+    lexicographically wrong, break period-based slugs and corrupt timelines.
+    Unparseable values are returned unchanged rather than dropped.
+    """
+    import datetime as _dt
+
+    raw = (value or "").strip()
+    if not raw:
+        return ""
+    if len(raw) == 10 and raw[4] == "-" and raw[7] == "-":
+        return raw
+    for fmt in _DATE_FORMATS:
+        try:
+            d = _dt.datetime.strptime(raw, fmt)
+            if fmt == "%Y":
+                return f"{d.year:04d}-01-01"
+            if fmt in ("%B %Y", "%b %Y"):
+                return f"{d.year:04d}-{d.month:02d}-01"
+            return d.strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    return raw
+
+
 def slugify(text: str, max_words: int = 6) -> str:
     text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode()
     words = [w for w in _SLUG_STRIP.sub(" ", text.lower()).split() if w and w not in _STOP]
@@ -209,6 +242,7 @@ def build_slug(row: dict, taken: set[str]) -> str:
 
 
 def from_enforcement_row(row: dict, taken: set[str]) -> RenderEvent:
+    row = {**row, "date": normalize_date(row.get("date", ""))}
     slug = build_slug(row, taken)
     taken.add(slug)
     return RenderEvent(
