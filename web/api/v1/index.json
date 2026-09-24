@@ -3,7 +3,7 @@
   "version": "v1",
   "license": "CC BY 4.0",
   "attribution": "KensaraAI — https://kensara.in",
-  "generated_at": "2026-09-21T03:47:12.500279+00:00",
+  "generated_at": "2026-09-24T05:09:55.673038+00:00",
   "endpoints": {
     "cases": "https://kensara-intelligence-module-alpha.vercel.app/api/v1/cases.json",
     "entities": "https://kensara-intelligence-module-alpha.vercel.app/api/v1/entities.json",
